@@ -1,0 +1,24 @@
+<p>
+	<strong>Name:</strong>
+	<%= @disk.name %>
+</p>
+
+<p>
+	<strong>Type:</strong>
+	<%= @disk.disk_type %>
+</p>
+
+<h2>Files</h2>
+<table>
+	<tr>
+		<th>File name</th>
+		<th>Size MB</th>
+	</tr>
+	<%= render @disk.file_disks %>
+</table>
+
+<h2>Add a file:</h2>
+<%= render 'file_disks/form' %>
+
+<%= link_to 'Back', disks_path %>
+<%= link_to 'Edit', edit_disk_path(@disk) %>

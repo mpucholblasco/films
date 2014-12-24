@@ -1,0 +1,25 @@
+<h1>Listing disks</h1>
+
+<%= link_to 'New disk', new_disk_path %>
+
+<table>
+	<tr>
+		<th>Name</th>
+		<th>Type</th>
+	</tr>
+
+	<% @disks.each do |disk| %>
+	<tr>
+		<td><%= disk.name %></td>
+		<td><%= disk.disk_type %></td>
+		<td><%= link_to 'Show', disk_path(disk) %></td>
+		<td><%= link_to 'Edit', edit_disk_path(disk) %></td>
+		<td><%= link_to 'Destroy', disk_path(disk),
+		method: :delete,
+		data: { confirm: 'Are you sure?' } %></td>
+	</tr>
+	<% end %>
+</table>
+
+
+<%= will_paginate @disks %>

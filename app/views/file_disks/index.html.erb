@@ -1,0 +1,24 @@
+<h1>Listing files</h1>
+
+<table>
+	<tr>
+		<th>File name</th>
+		<th>Size MB</th>
+		<th>Disk</th>
+	</tr>
+
+	<% @files.each do |file| %>
+	<tr>
+		<td><%= file.filename %></td>
+		<td><%= file.size_mb %></td>
+		<td><%= file.disk %>
+		<td><%= link_to 'Show', file_path(disk) %></td>
+		<td><%= link_to 'Edit', edit_file_path(disk) %></td>
+		<td><%= link_to 'Destroy', file_path(disk),
+		method: :delete,
+		data: { confirm: 'Are you sure?' } %></td>
+	</tr>
+	<% end %>
+</table>
+
+<%= will_paginate @files %>

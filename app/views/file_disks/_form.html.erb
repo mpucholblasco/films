@@ -1,0 +1,15 @@
+<%= form_for([@disk, @disk.file_disks.build]) do |f| %>
+<p>
+	<%= f.label :filename %>
+	<br>
+	<%= f.text_field :filename %>
+</p>
+<p>
+	<%= f.label :size_mb %>
+	<br>
+	<%= f.text_field :size_mb %>
+</p>
+<p>
+	<%= f.submit %>
+</p>
+<% end %>

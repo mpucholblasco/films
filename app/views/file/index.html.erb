@@ -1,0 +1,23 @@
+<h1>Files</h1>
+
+<%= form_tag files_path, :method => "get" do %>
+<%= label_tag(:search, "Search for filename:") %>
+<%= text_field_tag :search, params[:search] %>
+<%= submit_tag "Search", :name => nil %>
+<% end %>
+
+<table>
+	<tr>
+		<th>Name</th>
+		<th>Disk</th>
+	</tr>
+
+	<% @files.each do |file| %>
+	<tr>
+		<td><%= file.filename %></td>
+		<td><%= file.disk.name %></td>
+	</tr>
+	<% end %>
+</table>
+
+<%= will_paginate @files %>

@@ -1,6 +1,73 @@
 require 'yaml'
 
 module TasksHelper
+  class FileDiskInfo < FileDisk
+    def self.create_from_filename(filename, internal_filename, disk_id)
+      file_disk_info = FileDiskInfo.new
+      file_disk_info.filename = internal_filename
+      file_disk_info.size_mb = File.size(filename) / 1024 / 1024
+      file_disk_info.disk_id = disk_id
+      return file_disk_info
+    end
+
+    def ==(other)
+      other.filename == @filename and
+      other.size_mb == @size_mb
+    end
+  end
+
+  class HardDiskFilesInfo
+    PATHS_TO_PROCESS = [ "Peliculas", "Series", "procesar" ]
+
+    def initialize(mount, disk_id)
+      @mount = File.realpath(mount)
+      @disk_id = disk_id
+      @processed = false
+      @files_to_remove = []
+      @files_to_add = []
+    end
+
+    def get_files_to_remove
+      process if not @processed
+      return @files_to_remove
+    end
+
+    def get_files_to_add
+      process if not @processed
+      return @files_to_add
+    end
+
+    private
+
+    def process
+      files_on_db = {}
+      Disk.find(@disk_id).file_disks.each do |file_disk|
+        files_on_db[file_disk.filename] = file_disk
+      end
+
+      PATHS_TO_PROCESS.each do |path|
+        files = Dir.glob("#{@mount}/#{path}/**/*").select{ |e| File.file? e }
+        files.each do |file|
+          internal_filename = file[(@mount.length+1)..-1]
+          file_info = FileDiskInfo.create_from_filename(file, internal_filename, @disk_id)
+          file_db_info = files_on_db[internal_filename]
+          if file_db_info
+            if file_db_info != file_info
+            @files_to_remove << file_db_info
+            @files_to_add << file_info
+            else
+            @files_on_db.delete!(internal_filename)
+            end
+          else
+          @files_to_add << file_info
+          end
+        end
+      end
+      @files_to_remove.push(*files_on_db.values)
+      @processed = true
+    end
+  end
+
   class HardDiskInfo < Disk
     DEFAULT_FILE_NAME = 'info'
     def self.read_from_mounted_disk(mount)
@@ -35,7 +102,7 @@ module TasksHelper
       disk.name = content_lines[1].strip()
       return disk
     end
-    
+
     def initialize
       super
       self.disk_type = :HD
@@ -58,12 +125,11 @@ module TasksHelper
       self.created_at = other_disk.created_at
       self.updated_at = other_disk.updated_at
     end
-    
+
     def update_files_information(mount)
-      files = Dir.glob("#{mount}/**/*").select{ |e| File.file? e }
-      files.each do |f|
-        puts "File found: #{f}"
-      end
+      hard_disk_info = HardDiskFilesInfo.new(mount)
+      hard_disk_info.set_files_on_db(file_disks)
+
     end
   end
 end

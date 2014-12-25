@@ -34,7 +34,7 @@ namespace :films do
     end
   end
 
-  desc "Updates a disk information DB."
+  desc "Updates a disk information on DB."
   task :update_disk, [:mount] => :environment do |_,args|
     logger           = Logger.new(STDOUT)
     logger.level     = Logger::INFO
@@ -47,7 +47,8 @@ namespace :films do
       disk = TasksHelper::HardDiskInfo.read_from_mounted_disk(args.mount)
       disk.ensure_exists
       logger.info "Found disk info: #{disk.inspect}"
-      disk.update_files_information(args.mount)
+      hard_disk_files_info = TasksHelper::HardDiskFilesInfo.new(args.mount, disk.id)
+      logger.info "Going to delete <#{hard_disk_files_info.get_files_to_remove.length}> and to add <#{hard_disk_files_info.get_files_to_add.length}>"
     rescue ActiveRecord::RecordNotFound
       logger.error "Found disk info, but disk does not exist on DB"
     rescue IOError

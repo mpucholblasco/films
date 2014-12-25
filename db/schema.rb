@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141224191211) do
+ActiveRecord::Schema.define(version: 20141225105854) do
 
   create_table "disks", force: :cascade do |t|
     t.string   "name",       limit: 255
@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 20141224191211) do
     t.datetime "updated_at",             null: false
   end
 
+  add_index "file_disks", ["disk_id", "filename"], name: "index_file_disks_on_disk_id_and_filename", unique: true, using: :btree
   add_index "file_disks", ["disk_id"], name: "index_file_disks_on_disk_id", using: :btree
 
   add_foreign_key "file_disks", "disks"

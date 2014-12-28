@@ -4,6 +4,9 @@ Rails.application.routes.draw do
   get 'welcome/index'
   root 'welcome#index'
 
+  get 'disks/:id/update_content' => 'disks#update_content', as: :update_content
+  post 'disks/:id/update_content' => 'disks#updating_content', as: :updating_content
+
   # Resources
   resources :disks do
     resources :file_disks

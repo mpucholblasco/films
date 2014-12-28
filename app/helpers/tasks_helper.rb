@@ -125,11 +125,5 @@ module TasksHelper
       self.created_at = other_disk.created_at
       self.updated_at = other_disk.updated_at
     end
-
-    def update_files_information(mount)
-      hard_disk_info = HardDiskFilesInfo.new(mount)
-      hard_disk_info.set_files_on_db(file_disks)
-
-    end
   end
 end

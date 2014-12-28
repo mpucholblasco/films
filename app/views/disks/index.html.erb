@@ -13,6 +13,7 @@
 		<td><%= disk.name %></td>
 		<td><%= disk.disk_type %></td>
 		<td><%= link_to 'Show', disk_path(disk) %></td>
+		<td><%= link_to 'Update content', update_content_path(disk) %></td>
 		<td><%= link_to 'Edit', edit_disk_path(disk) %></td>
 		<td><%= link_to 'Destroy', disk_path(disk),
 		method: :delete,

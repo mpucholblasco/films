@@ -14,8 +14,9 @@
 		<th>File name</th>
 		<th>Size MB</th>
 	</tr>
-	<%= render @disk.file_disks %>
+	<%= render @file_disks %>
 </table>
+<%= will_paginate @file_disks %>
 
 <h2>Add a file:</h2>
 <%= render 'file_disks/form' %>

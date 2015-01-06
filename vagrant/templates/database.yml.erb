@@ -1,0 +1,21 @@
+default: &default
+  adapter: mysql2
+  encoding: utf8
+  pool: 5
+  username: films
+  password: rankdom
+  host: localhost
+
+development:
+  <<: *default
+  database: films_development
+
+test:
+  <<: *default
+  database: films_test
+
+production:
+  <<: *default
+  database: films
+  username: films
+  password: <%= @mysql_films_password %>

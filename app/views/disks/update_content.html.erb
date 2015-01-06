@@ -3,5 +3,7 @@
 	Insert disk '<%= @disk.name %>' on server an click on start button.
 </p>
 
-<%= button_to 'Start', updating_content_path(@disk), id: 'start_process', remote: true %>
-<div id="process_result"/>
+<%= form_tag(updating_content_path(@disk, :format => :json), :id => 'start_process', :remote => true) do %>
+  <%= submit_tag("Start") %><div id="loading">Loading</div>
+<% end %>
+<div id="process_result"></div>

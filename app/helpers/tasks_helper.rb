@@ -11,8 +11,8 @@ module TasksHelper
     end
 
     def ==(other)
-      other.filename == @filename and
-      other.size_mb == @size_mb
+      other.filename == self.filename and
+      other.size_mb == self.size_mb
     end
   end
 
@@ -52,11 +52,11 @@ module TasksHelper
           file_info = FileDiskInfo.create_from_filename(file, internal_filename, @disk_id)
           file_db_info = files_on_db[internal_filename]
           if file_db_info
-            if file_db_info != file_info
+            if file_info == file_db_info
+            files_on_db.delete(internal_filename)
+           else
             @files_to_remove << file_db_info
             @files_to_add << file_info
-            else
-            @files_on_db.delete!(internal_filename)
             end
           else
           @files_to_add << file_info

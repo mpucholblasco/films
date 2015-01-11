@@ -2,8 +2,7 @@
 
 <% if @disk and @disk.errors.any? %>
 <div id="error_explanation">
-	<h2> <%= pluralize(@disk.errors.count, "error") %> prohibited
-	this disk from being saved: </h2>
+	<h2> <%= pluralize(@disk.errors.count, "error") %> <%= t(:disk_prohibited_error) %>: </h2>
 	<ul>
 		<% @disk.errors.full_messages.each do |msg| %>
 		<li>
@@ -15,13 +14,13 @@
 <% end %>
 
 <p>
-	<%= f.label :name %>
+	<%= f.label t(:name) %>
 	<br>
 	<%= f.text_field :name %>
 </p>
 
 <p>
-	<%= f.label :disk_type %>
+	<%= f.label t(:type) %>
 	<br>
 	<%= f.select(:disk_type) do %>
 		<% Disk.disk_types.keys.each do |d| -%>

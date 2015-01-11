@@ -14,3 +14,7 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require_tree .
+//= require i18n
+//= require i18n/translations
+
+// Note: to create translations: rake i18n:js:export

@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Films</title>
-  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
-  <%= csrf_meta_tags %>
-</head>
-<body>
-<%= nav_links %>
-<div class="body">
-<%= yield %>
-</div>
-</body>
+	<head>
+		<title>Films</title>
+		<%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+		<%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+		<%= javascript_tag do %>
+			I18n.defaultLocale = "<%= I18n.default_locale %>";
+			I18n.locale = "<%= I18n.locale %>";
+		<% end %>
+		<%= csrf_meta_tags %>
+	</head>
+	<body>
+		<%= nav_links %>
+		<div class="body">
+			<%= yield %>
+		</div>
+	</body>
 </html>

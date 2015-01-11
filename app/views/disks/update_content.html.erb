@@ -1,9 +1,7 @@
-<h1><%= link_to 'Disks', disks_path %> / <%= link_to @disk.name, disk_path(@disk) %> / Update content</h1>
-<p>
-	Insert disk '<%= @disk.name %>' on server an click on start button.
-</p>
+<h1><%= link_to t(:disks), disks_path %> / <%= link_to @disk.name, disk_path(@disk) %> / <%= t(:update_content) %></h1>
+<p><%= t(:update_content_message, :disk_name => @disk.name)%></p>
 
 <%= form_tag(updating_content_path(@disk, :format => :json), :id => 'start_process', :remote => true) do %>
-  <%= submit_tag("Start", :class => 'button') %><div id="loading">Loading</div>
+  <%= submit_tag(t(:start), :class => 'button') %><div id="loading"><%= t(:loading) %></div>
 <% end %>
 <div id="process_result"></div>

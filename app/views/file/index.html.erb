@@ -1,15 +1,15 @@
-<h1>Files</h1>
+<h1><%= t(:files) %></h1>
 
 <%= form_tag files_path, :method => "get" do %>
-<%= label_tag(:search, "Search for filename:") %>
+<%= label_tag(:search, t(:search_file)) %>
 <%= text_field_tag :search, params[:search] %>
-<%= submit_tag "Search", :name => nil, :class => 'button' %>
+<%= submit_tag t(:search), :name => nil, :class => 'button' %>
 <% end %>
 
 <table>
 	<tr>
-		<th>Name</th>
-		<th>Disk</th>
+		<th><%= t(:name) %></th>
+		<th><%= t(:disk) %></th>
 	</tr>
 
 	<% @files.each do |file| %>

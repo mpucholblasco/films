@@ -7,11 +7,11 @@ module ApplicationHelper
   end
 
   def disks_link
-    nav_item_active_if current_page?(disks_path), 'Disks', controller: 'disks'
+    nav_item_active_if current_page?(disks_path), t(:disks), controller: 'disks'
   end
 
   def files_link
-    nav_item_active_if current_page?(files_path), 'Files', controller: 'file'
+    nav_item_active_if current_page?(files_path), t(:files), controller: 'file'
   end
 
   def nav_item_active_if(condition, name, attributes)

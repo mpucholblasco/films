@@ -1,23 +1,27 @@
-# Files in the config/locales directory are used for internationalization
-# and are automatically loaded by Rails. If you want to use locales other
-# than English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t 'hello'
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t('hello') %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more, please read the Rails Internationalization guide
-# available at http://guides.rubyonrails.org/i18n.html.
-
 en:
-  hello: "Hello world"
+  # Disks
+  disks: "Disks"
+  new_disk: "New disk"
+  disk_prohibited_error: "Prohibited this disk from being saved"
+  update_content_message: "Insert disk '%{disk_name}' on server an click on start button."
+  
+  # Files
+  files: "Files"
+  filename: "File name"
+  size_mb: "Size MB"
+  add_new_file: "Add a new file"
+  
+  # Global
+  name: "Name"
+  type: "Type"
+  actions: "Actions"
+  
+  # Actions
+  show: "Show"
+  update_content: "Update content"
+  edit: "Edit"
+  destroy: "Destroy"
+  new: "New"
+  loading: "Loading"
+  start: "Start"
+  question_sure: "Are you sure?"

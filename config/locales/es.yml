@@ -1,0 +1,37 @@
+es:
+  # Disks
+  disks: "Discos"
+  disk: "Disco"
+  new_disk: "Nuevo disco"
+  disk_prohibited_error: "No se puede guardar este disco"
+  update_content_message: "Inserta el disco '%{disk_name}' en el servidor y haz click en el botón 'Empezar'."
+  update_content_finish: "Proceso finalizado correctamente. Eliminados: %{deleted}, agregados: %{added}"
+  update_content_error: "Error: %{message}"
+  
+  # Files
+  files: "Ficheros"
+  filename: "Nombre del fichero"
+  size_mb: "Tamaño en MB"
+  add_new_file: "Agregar un nuevo fichero"
+  search_file: "Buscar fichero"
+  
+  # Global
+  name: "Nombre"
+  type: "Tipo"
+  actions: "Acciones"
+  
+  # Actions
+  show: "Mostrar"
+  update_content: "Actualizar contenido"
+  edit: "Editar"
+  destroy: "Eliminar"
+  new: "Nuevo"
+  loading: "Cargando"
+  start: "Empezar"
+  search: "Buscar"
+  question_sure: "¿Estás seguro?"
+  
+  # Pagination
+  will_paginate:
+    previous_label: "Anterior"
+    next_label: "Siguiente"

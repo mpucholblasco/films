@@ -26,6 +26,11 @@ gem 'jbuilder', '~> 2.0'
 # bundle exec rake doc:rails generates the API under doc/api.
 gem 'sdoc', '~> 0.4.0', group: :doc
 
+# i18n-js
+# You only need this RC version constraint during the development of `3.0.0`, once stable version is released you can remove `rc8` suffix
+# `3.0.0.rc8` is the latest version of released RC version when this entry is changed, you might want to change it later
+gem "i18n-js", ">= 3.0.0.rc8" 
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 

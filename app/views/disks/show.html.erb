@@ -1,26 +1,26 @@
-<h1><%= link_to 'Disks', disks_path %> / <%= @disk.name %></h1>
+<h1><%= link_to t(:disks), disks_path %> / <%= @disk.name %></h1>
 
 <%= link_to 'Edit', edit_disk_path(@disk), :class => 'button' %>
 <p>
-	<strong>Name:</strong>
+	<strong><%= t(:name) %>:</strong>
 	<%= @disk.name %>
 </p>
 
 <p>
-	<strong>Type:</strong>
+	<strong><%= t(:type) %>:</strong>
 	<%= @disk.disk_type %>
 </p>
 
-<h2>Files</h2>
+<h2><%= t(:files) %></h2>
 <table>
 	<tr>
-		<th>File name</th>
-		<th>Size MB</th>
-		<th>Actions</th>
+		<th><%= t(:filename) %></th>
+		<th><%= t(:size_mb) %></th>
+		<th><%= t(:actions) %></th>
 	</tr>
 	<%= render @file_disks %>
 </table>
 <%= will_paginate @file_disks %>
 
-<h2>Add a file</h2>
+<h2><%= t(:add_new_file) %></h2>
 <%= render 'file_disks/form' %>

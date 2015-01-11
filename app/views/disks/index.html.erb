@@ -1,24 +1,24 @@
-<h1>Disks</h1>
+<h1><%= t(:disks) %></h1>
 
-<%= link_to 'New disk', new_disk_path, :class => 'button' %>
+<%= link_to t(:new_disk), new_disk_path, :class => 'button' %>
 
 <table>
 	<tr>
-		<th>Name</th>
-		<th>Type</th>
-		<th colspan="4">Actions</th>
+		<th><%= t(:name) %></th>
+		<th><%= t(:type) %></th>
+		<th colspan="4"><%= t(:actions) %></th>
 	</tr>
 
 	<% @disks.each do |disk| %>
 	<tr>
 		<td><%= disk.name %></td>
 		<td><%= disk.disk_type %></td>
-		<td class="action"><%= link_to 'Show', disk_path(disk), :class => 'button' %></td>
-		<td class="action"><%= link_to 'Update content', update_content_path(disk), :class => 'button' %></td>
-		<td class="action"><%= link_to 'Edit', edit_disk_path(disk), :class => 'button' %></td>
-		<td class="action"><%= link_to 'Destroy', disk_path(disk),
+		<td class="action"><%= link_to t(:show), disk_path(disk), :class => 'button' %></td>
+		<td class="action"><%= link_to t(:update_content), update_content_path(disk), :class => 'button' %></td>
+		<td class="action"><%= link_to t(:edit), edit_disk_path(disk), :class => 'button' %></td>
+		<td class="action"><%= link_to t(:destroy), disk_path(disk),
 		method: :delete,
-		data: { confirm: 'Are you sure?' }, :class => 'button' %></td>
+		data: { confirm: t(:question_sure) }, :class => 'button' %></td>
 	</tr>
 	<% end %>
 </table>

@@ -1,4 +1,3 @@
-<h1>Editing disk</h1>
+<h1><%= link_to 'Disks', disks_path %> / <%= link_to @disk.name, disk_path(@disk) %> / Edit</h1>
 
 <%= render 'form' %>
-<%= link_to 'Back', disks_path %>

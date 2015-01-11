@@ -15,16 +15,48 @@
  */
 $primary-color: blue;
 $current-item-color: $primary-color - 100;
+$primary-light-color: $primary-color + 50;
+$primary-lighter-color: $primary-color + 100;
+$primary-very-light-color: $primary-color + 220;
+
+$button-disabled-color: gray;
+
+@mixin button($button-color) {
+	font-size: small;
+	color: white;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	cursor: pointer;
+	vertical-align: middle;
+	text-align: center;
+	display: inline-block;
+	padding: 6px 12px;
+	border: 1px solid transparent;
+	border-radius: 4px;
+	text-decoration: blink;
+	-webkit-appearance: button;
+	box-sizing: border-box;
+	background-color: $button-color;
+}
+
+@mixin button-hover() {
+	background-color: $primary-light-color;
+	text-shadow: 2px 2px black;
+	color: white;
+}
 
 @mixin border-radius($radius) {
-  -webkit-border-radius: $radius;
-     -moz-border-radius: $radius;
-      -ms-border-radius: $radius;
-          border-radius: $radius;
+	-webkit-border-radius: $radius;
+	-moz-border-radius: $radius;
+	-ms-border-radius: $radius;
+	border-radius: $radius;
 }
 
 nav {
 	@include border-radius(10px);
+	font-family: arial,sans-serif;
 	border: 1px solid #ccc;
 	padding: 10px;
 	position: fixed;
@@ -45,16 +77,101 @@ nav {
 	}
 	
 	a:hover:not(.active) {
-		@extend a.active;
-		background-color: $primary-color;
+		@include button-hover();
+		@include border-radius(3px);
 	}
 }
 
 div.body {
 	position: relative;
 	left: 9%;
+	width: 90%;
+	font-family: arial,sans-serif;
 }
 
-h1 {
-	color: $primary-color;
+h1, h2 {
+	color:  $primary-color;
+	
+	a {
+		text-decoration: blink;
+		color: $primary-color;
+	}
+}
+
+/* Tables */
+table {
+	border-collapse: collapse;
+	margin-top: 5px;
+	width: 100%;
+}
+
+table, th, td {
+	border: 1px solid $primary-color;
+}
+
+th {
+	background-color:  $primary-color;
+	color: white;
+	padding: 5px;
+	text-align: left;
+}
+
+td {
+	padding: 3px;
+}
+
+td.action {
+	white-space: nowrap;
+	width: 1px;
+}
+
+tr:nth-child(odd) {
+	background-color:  $primary-very-light-color;
+}
+
+tr:hover {
+	background-color: $primary-lighter-color;
+}
+
+td.action {
+	border: none;
+	background-color: white;
+}
+
+a.button {
+	@include button($primary-color);
+}
+
+a.button:hover {
+	@include button-hover();
+}
+
+.pagination {
+	display: block;
+	text-align: center;
+	margin-top: 10px;
+	
+	a {
+		@include button($primary-color);
+	}
+	
+	a:hover {
+		@include button-hover();
+	}
+}
+
+.previous_page.disabled, .next_page.disabled {
+	@include button($button-disabled-color);
+}
+
+.button {
+	@include button($primary-color);
+}
+
+input.button:hover {
+	@include button-hover();
+}
+
+label {
+	font-weight: bold;
 }

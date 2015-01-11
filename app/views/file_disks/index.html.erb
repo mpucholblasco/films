@@ -5,6 +5,7 @@
 		<th>File name</th>
 		<th>Size MB</th>
 		<th>Disk</th>
+		<th colspan="3">Actions</th>
 	</tr>
 
 	<% @files.each do |file| %>
@@ -12,11 +13,11 @@
 		<td><%= file.filename %></td>
 		<td><%= file.size_mb %></td>
 		<td><%= file.disk %>
-		<td><%= link_to 'Show', file_path(disk) %></td>
-		<td><%= link_to 'Edit', edit_file_path(disk) %></td>
-		<td><%= link_to 'Destroy', file_path(disk),
+		<td class="action"><%= link_to 'Show', file_path(disk), :class => 'button' %></td>
+		<td class="action"><%= link_to 'Edit', edit_file_path(disk), :class => 'button' %></td>
+		<td class="action"><%= link_to 'Destroy', file_path(disk),
 		method: :delete,
-		data: { confirm: 'Are you sure?' } %></td>
+		data: { confirm: 'Are you sure?' }, :class => 'button' %></td>
 	</tr>
 	<% end %>
 </table>

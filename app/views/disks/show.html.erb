@@ -1,4 +1,6 @@
-<h1>Disk information</h1>
+<h1><%= link_to 'Disks', disks_path %> / <%= @disk.name %></h1>
+
+<%= link_to 'Edit', edit_disk_path(@disk), :class => 'button' %>
 <p>
 	<strong>Name:</strong>
 	<%= @disk.name %>
@@ -14,13 +16,11 @@
 	<tr>
 		<th>File name</th>
 		<th>Size MB</th>
+		<th>Actions</th>
 	</tr>
 	<%= render @file_disks %>
 </table>
 <%= will_paginate @file_disks %>
 
-<h2>Add a file:</h2>
+<h2>Add a file</h2>
 <%= render 'file_disks/form' %>
-
-<%= link_to 'Back', disks_path %>
-<%= link_to 'Edit', edit_disk_path(@disk) %>

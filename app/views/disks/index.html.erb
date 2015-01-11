@@ -1,23 +1,24 @@
 <h1>Disks</h1>
 
-<%= link_to 'New disk', new_disk_path %>
+<%= link_to 'New disk', new_disk_path, :class => 'button' %>
 
 <table>
 	<tr>
 		<th>Name</th>
 		<th>Type</th>
+		<th colspan="4">Actions</th>
 	</tr>
 
 	<% @disks.each do |disk| %>
 	<tr>
 		<td><%= disk.name %></td>
 		<td><%= disk.disk_type %></td>
-		<td><%= link_to 'Show', disk_path(disk) %></td>
-		<td><%= link_to 'Update content', update_content_path(disk) %></td>
-		<td><%= link_to 'Edit', edit_disk_path(disk) %></td>
-		<td><%= link_to 'Destroy', disk_path(disk),
+		<td class="action"><%= link_to 'Show', disk_path(disk), :class => 'button' %></td>
+		<td class="action"><%= link_to 'Update content', update_content_path(disk), :class => 'button' %></td>
+		<td class="action"><%= link_to 'Edit', edit_disk_path(disk), :class => 'button' %></td>
+		<td class="action"><%= link_to 'Destroy', disk_path(disk),
 		method: :delete,
-		data: { confirm: 'Are you sure?' } %></td>
+		data: { confirm: 'Are you sure?' }, :class => 'button' %></td>
 	</tr>
 	<% end %>
 </table>

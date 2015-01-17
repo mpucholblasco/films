@@ -1,11 +1,18 @@
 Rails.application.routes.draw do
-  get 'files' => 'file#index'
-
+# Welcome (main) page
   get 'welcome/index'
   root 'welcome#index'
 
+  # Disks
   get 'disks/:id/update_content' => 'disks#update_content', as: :update_content
   post 'disks/:id/update_content' => 'disks#updating_content', as: :updating_content
+
+  # Files
+  get 'files' => 'file#index'
+
+  # Tools
+  get 'tools' => 'tools#index'
+  get 'tools/find_duplicates' => 'tools#find_duplicates'
 
   # Resources
   resources :disks do

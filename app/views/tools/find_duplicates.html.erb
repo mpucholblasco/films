@@ -1,0 +1,23 @@
+<h1><%= link_to t(:tools), tools_path %> / <%= t(:find_duplicates) %></h1>
+<% @duplicates.each_pair do |filename, file_disks|%>
+
+<p>
+	<strong><%= t(:name) %>:</strong>
+	<%= filename %>
+</p>
+
+<h2><%= t(:files) %></h2>
+<table>
+	<tr>
+		<th><%= t(:filename) %></th>
+		<th><%= t(:disk) %></th>
+	</tr>
+	<% file_disks.each do |file| %>
+	<tr>
+		<td><%= file.filename %></td>
+		<td><%= link_to file.disk.name, disk_path(file.disk), :class => 'ref' %></td>
+	</tr>
+	<% end %>
+</table>
+
+<% end %>

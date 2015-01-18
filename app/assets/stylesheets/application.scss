@@ -21,6 +21,13 @@ $primary-very-light-color: $primary-color + 220;
 
 $button-disabled-color: gray;
 
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -ms-border-radius: $radius;
+  border-radius: $radius;
+}
+
 @mixin button($button-color) {
 	font-size: small;
 	color: white;
@@ -34,7 +41,7 @@ $button-disabled-color: gray;
 	display: inline-block;
 	padding: 6px 12px;
 	border: 1px solid transparent;
-	border-radius: 4px;
+	@include border-radius(4px);
 	text-decoration: blink;
 	-webkit-appearance: button;
 	box-sizing: border-box;
@@ -45,13 +52,6 @@ $button-disabled-color: gray;
 	background-color: $primary-light-color;
 	text-shadow: 2px 2px black;
 	color: white;
-}
-
-@mixin border-radius($radius) {
-	-webkit-border-radius: $radius;
-	-moz-border-radius: $radius;
-	-ms-border-radius: $radius;
-	border-radius: $radius;
 }
 
 nav {
@@ -105,7 +105,7 @@ a.ref {
 
 /* Tables */
 table {
-	border-collapse: collapse;
+	@include border-radius(5px);
 	margin-top: 5px;
 	width: 100%;
 }

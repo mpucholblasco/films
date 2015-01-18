@@ -1,23 +1,25 @@
 <h1><%= t(:files) %></h1>
 
-<%= form_tag files_path, :method => "get" do %>
+<%= form_tag files_path, :method => "get", :remote => true, :data => { 'turboform' => true } do %>
 <%= label_tag(:search, t(:search_file)) %>
-<%= text_field_tag :search, params[:search] %>
+<%= text_field_tag :search, params[:search], :autofocus => 'autofocus' %>
 <%= submit_tag t(:search), :name => nil, :class => 'button' %>
 <% end %>
 
-<table>
-	<tr>
-		<th><%= t(:name) %></th>
-		<th><%= t(:disk) %></th>
-	</tr>
-
-	<% @files.each do |file| %>
-	<tr>
-		<td><%= file.filename %></td>
-		<td><%= link_to file.disk.name, disk_path(file.disk), :class => 'ref' %></td>
-	</tr>
-	<% end %>
-</table>
-
-<%= will_paginate @files %>
+<div id="process_result">
+	<table>
+		<tr>
+			<th><%= t(:name) %></th>
+			<th><%= t(:disk) %></th>
+		</tr>
+	
+		<% @files.each do |file| %>
+		<tr>
+			<td><%= file.filename %></td>
+			<td><%= link_to file.disk.name, disk_path(file.disk), :class => 'ref' %></td>
+		</tr>
+		<% end %>
+	</table>
+	
+	<%= will_paginate @files %>
+</div>

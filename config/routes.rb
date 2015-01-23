@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   # Tools
   get 'tools' => 'tools#index'
   get 'tools/find_duplicates' => 'tools#find_duplicates'
+  get 'tools/find_series_duplicates' => 'tools#find_series_duplicates'
 
   # Resources
   resources :disks do

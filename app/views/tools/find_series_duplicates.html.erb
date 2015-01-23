@@ -1,0 +1,21 @@
+<h1><%= link_to t(:tools), tools_path %> / <%= t(:find_duplicates) %></h1>
+
+<% if @duplicates.empty? %>
+<p><%= t(:duplicate_series_not_found) %></p>
+<% else %>
+<% @duplicates.each_pair do |seriename, serie_disk|%>
+<table>
+	<tr>
+		<th><%= seriename %></th>
+	</tr>
+	<tr>
+		<th><%= t(:disk) %></th>
+	</tr>
+	<% serie_disk.each_pair do |diskname,v| %>
+	<tr>
+		<td><%= diskname %></td>
+	</tr>
+	<% end %>
+</table>
+<% end %>
+<% end %>

@@ -7,11 +7,29 @@ class ToolsController < ApplicationController
     @duplicates = get_file_disk_duplicates
     logger.info "Found #{@duplicates.length} duplicates"
   end
-  
+
   def find_series_duplicates
     logger.info "Finding series duplicated"
     @duplicates = get_series_duplicates
     logger.info "Found #{@duplicates.length} series duplicated"
+  end
+
+  def stop_amule
+    begin
+      `sudo service amule-daemon stop`
+      @message = :server_stopped_correctly
+    rescue
+      @message = :server_stopped_error
+    end
+  end
+
+  def start_amule
+    begin
+      `sudo service amule-daemon start`
+      @message = :server_started_correctly
+    rescue
+      @message = :server_started_error
+    end
   end
 
   private

@@ -18,6 +18,8 @@ Rails.application.routes.draw do
   get 'tools' => 'tools#index'
   get 'tools/find_duplicates' => 'tools#find_duplicates'
   get 'tools/find_series_duplicates' => 'tools#find_series_duplicates'
+  get 'tools/stop_amule' => 'tools#stop_amule'
+  get 'tools/start_amule' => 'tools#start_amule'
 
   # Resources
   resources :disks do

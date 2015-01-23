@@ -1,0 +1,22 @@
+<h1><%= t(:downloads) %></h1>
+
+<% if @downloads_last_update && @downloads && ! @downloads.empty? %>
+<p><strong><%= t(:last_update) %>:</strong> <%= l(@downloads_last_update, format: :long) %></p>
+<table>
+	<tr>
+		<th><%= t(:filename) %></th>
+		<th><%= t(:percentage) %></th>
+	</tr>
+
+	<% @downloads.each do |download| %>
+	<tr>
+		<td><%= download.filename %></td>
+		<td><%= download.percentage %></td>
+	</tr>
+	<% end %>
+</table>
+
+<%= will_paginate @downloads %>
+<% else %>
+<p><%= t(:downloads_search_not_found)%></p>
+<% end -%>

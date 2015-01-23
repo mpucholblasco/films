@@ -1,6 +1,6 @@
 module ApplicationHelper
   def nav_links
-    items = [disks_link, files_link, tools_link]
+    items = [disks_link, files_link, downloads_link, tools_link]
     content_tag :nav do
       items.collect { |item| concat item}
     end
@@ -8,6 +8,10 @@ module ApplicationHelper
 
   def disks_link
     nav_item_active_if current_page?(disks_path), t(:disks), controller: 'disks'
+  end
+
+  def downloads_link
+    nav_item_active_if current_page?(downloads_path), t(:downloads), controller: 'downloads'
   end
 
   def files_link

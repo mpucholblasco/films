@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141225105854) do
+ActiveRecord::Schema.define(version: 20150123112755) do
 
   create_table "disks", force: :cascade do |t|
     t.string   "name",       limit: 255
@@ -21,6 +21,13 @@ ActiveRecord::Schema.define(version: 20141225105854) do
   end
 
   add_index "disks", ["name"], name: "index_disks_on_name", unique: true, using: :btree
+
+  create_table "downloads", force: :cascade do |t|
+    t.string   "filename",   limit: 255
+    t.float    "percentage", limit: 24
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
 
   create_table "file_disks", force: :cascade do |t|
     t.string   "filename",   limit: 255
@@ -32,6 +39,15 @@ ActiveRecord::Schema.define(version: 20141225105854) do
 
   add_index "file_disks", ["disk_id", "filename"], name: "index_file_disks_on_disk_id_and_filename", unique: true, using: :btree
   add_index "file_disks", ["disk_id"], name: "index_file_disks_on_disk_id", using: :btree
+
+  create_table "update_stats", force: :cascade do |t|
+    t.string   "name",         limit: 255
+    t.integer  "update_count", limit: 4
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  add_index "update_stats", ["name"], name: "index_update_stats_on_name", unique: true, using: :btree
 
   add_foreign_key "file_disks", "disks"
 end

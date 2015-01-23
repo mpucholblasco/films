@@ -6,6 +6,10 @@ Rails.application.routes.draw do
   # Disks
   get 'disks/:id/update_content' => 'disks#update_content', as: :update_content
   post 'disks/:id/update_content' => 'disks#updating_content', as: :updating_content
+  
+  # Downloads
+  get 'downloads' => 'downloads#index'
+  post 'downloads' => 'downloads#store'
 
   # Files
   get 'files' => 'file#index'

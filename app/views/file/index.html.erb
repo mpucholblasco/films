@@ -6,20 +6,44 @@
 <%= submit_tag t(:search), :name => nil, :class => 'button' %>
 <% end %>
 
-<div id="process_result">
-	<table>
-		<tr>
-			<th><%= t(:name) %></th>
-			<th><%= t(:disk) %></th>
-		</tr>
-	
-		<% @files.each do |file| %>
-		<tr>
-			<td><%= file.filename %></td>
-			<td><%= link_to file.disk.name, disk_path(file.disk), :class => 'ref' %></td>
-		</tr>
-		<% end %>
-	</table>
-	
-	<%= will_paginate @files %>
-</div>
+<h2><%= t(:downloads) %></h2>
+<% if @downloads_last_update && @downloads && ! @downloads.empty? %>
+<p><strong><%= t(:last_update) %>:</strong> <%= @downloads_last_update %></p>
+<table>
+	<tr>
+		<th><%= t(:name) %></th>
+		<th><%= t(:percentage) %></th>
+	</tr>
+
+	<% @downloads.each do |download| %>
+	<tr>
+		<td><%= download.filename %></td>
+		<td><%= download.percentage %></td>
+	</tr>
+	<% end %>
+</table>
+<% else %>
+<p><%= t(:downloads_search_not_found)%></p>
+<% end -%>
+
+<h2><%= t(:files) %></h2>
+<% if @files.empty? %>
+<p><%= t(:files_search_not_found)%></p>
+<% else %>
+<table>
+	<tr>
+		<th><%= t(:name) %></th>
+		<th><%= t(:disk) %></th>
+	</tr>
+
+	<% @files.each do |file| %>
+	<tr>
+		<td><%= file.filename %></td>
+		<td><%= link_to file.disk.name, disk_path(file.disk), :class => 'ref' %></td>
+	</tr>
+	<% end %>
+</table>
+
+<%= will_paginate @files %>
+<% end -%>
+

@@ -1,6 +1,6 @@
-class FileDisk < ActiveRecord::Base
-  belongs_to :disk
-  def self.search(search, page)
+class Download < ActiveRecord::Base
+  DOWNLOAD_UPDATE_STAT_NAME = 'download'
+  def self.search(search)
     if search
       search = search.strip
       if not search.empty?
@@ -21,6 +21,18 @@ class FileDisk < ActiveRecord::Base
     else
       matches = all
     end
-    matches.paginate :per_page => 50, :page => page
+    matches
+  end
+  
+  def self.get_last_update()
+    update_stat = UpdateStat.select(:updated_at).find_by(name: DOWNLOAD_UPDATE_STAT_NAME)
+    return update_stat.updated_at if update_stat
+    return nil
+  end
+  
+  def self.set_last_update()
+    update_stat = UpdateStat.find_or_create_by(name: 'download')
+    update_stat.update_count += 1
+    update_stat.save()
   end
 end

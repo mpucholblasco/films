@@ -27,10 +27,8 @@ class AmuleCmdParser(object):
 
 	def parse_line(self, line):
 		line = line.strip()
-		print "Parsing line. Status (%d): %s" % (self.status, line)
 		if self.status == 0:
 			matches = AmuleCmdParser.FIRST_LINE_RE.match(line)
-			print "Matches -> %s" % (str(matches))
 			if matches:
 				if self.last_file:
 					raise ValueError('Found match for file but file is not empty')

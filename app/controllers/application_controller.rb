@@ -5,9 +5,11 @@ class ApplicationController < ActionController::Base
 
   before_action :set_locale
   def set_locale
-    logger.debug "* Accept-Language: #{request.env['HTTP_ACCEPT_LANGUAGE']}"
-    set_correct_locale
-    logger.debug "* Locale set to '#{I18n.locale}'"
+    if ! request.format.json?
+      logger.debug "* Accept-Language: #{request.env['HTTP_ACCEPT_LANGUAGE']}"
+      set_correct_locale
+      logger.debug "* Locale set to '#{I18n.locale}'"
+    end
   end
 
   private

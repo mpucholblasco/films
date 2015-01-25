@@ -63,7 +63,7 @@ namespace :films do
             file.save
           end
         end
-        disk_db = Disks.find(disk.id)
+        disk_db = Disk.find(disk.id)
         disk_db.last_sync = Time.zone.now
         disk_db.save()
       end

@@ -17,7 +17,7 @@ module TasksHelper
   end
 
   class HardDiskFilesInfo
-    PATHS_TO_PROCESS = [ "Peliculas", "Series", "procesar" ]
+    PATHS_TO_PROCESS = [ "Peliculas", "Series", "procesar", "Incoming" ]
 
     def initialize(mount, disk_id)
       @mount = File.realpath(mount)

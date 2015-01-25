@@ -63,8 +63,8 @@ namespace :films do
             file.save
           end
         end
-        @disk.last_sync = Time.zone.now
-        @disk.save()
+        disk.last_sync = Time.zone.now
+        disk.save()
       end
     rescue ActiveRecord::RecordNotFound
       logger.error "Found disk info, but disk does not exist on DB"

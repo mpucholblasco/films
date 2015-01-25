@@ -49,6 +49,18 @@ namespace :films do
       logger.info "Found disk info: #{disk.inspect}"
       hard_disk_files_info = TasksHelper::HardDiskFilesInfo.new(args.mount, disk.id)
       logger.info "Going to delete <#{hard_disk_files_info.get_files_to_remove.length}> and to add <#{hard_disk_files_info.get_files_to_add.length}>"
+      TasksHelper::HardDiskInfo.transaction do
+        logger.info "Going to delete <#{hard_disk_files_info.get_files_to_remove.length}>"
+        hard_disk_files_info.get_files_to_remove.each do |file|
+          file.delete
+        end
+        logger.info "Going to add <#{hard_disk_files_info.get_files_to_add.length}>"
+        hard_disk_files_info.get_files_to_add.each do |file|
+          file.save
+        end
+        @disk.last_sync = Time.zone.now
+        @disk.save()
+      end
     rescue ActiveRecord::RecordNotFound
       logger.error "Found disk info, but disk does not exist on DB"
     rescue IOError

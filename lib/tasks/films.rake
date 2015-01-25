@@ -56,7 +56,12 @@ namespace :films do
         end
         logger.info "Going to add <#{hard_disk_files_info.get_files_to_add.length}>"
         hard_disk_files_info.get_files_to_add.each do |file|
-          file.save
+          begin
+            file.save
+          rescue
+            file.filename = file.filename.encode('UTF-8', :invalid => :replace, :undef => :replace) 
+            file.save
+          end
         end
         @disk.last_sync = Time.zone.now
         @disk.save()

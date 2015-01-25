@@ -6,6 +6,7 @@
 	<tr>
 		<th><%= t(:name) %></th>
 		<th><%= t(:type) %></th>
+		<th><%= t(:last_update) %></th>
 		<th colspan="4"><%= t(:actions) %></th>
 	</tr>
 
@@ -13,6 +14,7 @@
 	<tr>
 		<td><%= disk.name %></td>
 		<td><%= disk.disk_type %></td>
+		<td><% if disk.last_sync %><%= l(disk.last_sync, format: :simple) %><% end %></td>
 		<td class="action"><%= link_to t(:show), disk_path(disk), :class => 'button' %></td>
 		<td class="action"><%= link_to t(:update_content), update_content_path(disk), :class => 'button' %></td>
 		<td class="action"><%= link_to t(:edit), edit_disk_path(disk), :class => 'button' %></td>

@@ -8,7 +8,7 @@
 
 <h2><%= t(:downloads) %></h2>
 <% if @downloads_last_update && @downloads && ! @downloads.empty? %>
-<p><strong><%= t(:last_update) %>:</strong> <%= @downloads_last_update %></p>
+<p><strong><%= t(:last_update) %>:</strong> <%= l(@downloads_last_update) %></p>
 <table>
 	<tr>
 		<th><%= t(:name) %></th>

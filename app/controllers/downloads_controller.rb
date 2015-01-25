@@ -3,7 +3,6 @@ class DownloadsController < ApplicationController
   
   def index
     @downloads_last_update = Download.get_last_update()
-    @downloads_last_update = @downloads_last_update.in_time_zone(ActiveSupport::TimeZone.new("Europe/Madrid")) if @downloads_last_update
     @downloads = Download.paginate(:page => params[:page], per_page: 50).order(:filename) if @downloads_last_update
   end
   

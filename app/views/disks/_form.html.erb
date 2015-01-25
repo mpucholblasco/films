@@ -30,6 +30,16 @@
 </p>
 
 <p>
+	<%= f.label t(:last_update) %>
+	<br>
+	<% if @disk.last_sync %>
+		<%= l(@disk.last_sync) %>
+	<% else %>
+		<%= t(:last_update_not_set) %>
+	<% end -%>
+</p>
+
+<p>
 	<%= f.submit :class => 'button' %>
 </p>
 

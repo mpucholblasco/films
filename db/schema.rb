@@ -11,13 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150123112755) do
+ActiveRecord::Schema.define(version: 20150125093305) do
 
   create_table "disks", force: :cascade do |t|
     t.string   "name",       limit: 255
     t.integer  "disk_type",  limit: 4
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
+    t.datetime "last_sync"
   end
 
   add_index "disks", ["name"], name: "index_disks_on_name", unique: true, using: :btree

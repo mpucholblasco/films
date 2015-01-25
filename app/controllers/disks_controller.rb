@@ -75,6 +75,8 @@ class DisksController < ApplicationController
           hard_disk_files_info.get_files_to_add.each do |file|
             file.save
           end
+          @disk.last_sync = Time.zone.now
+          @disk.save()
         end
         respond_to do |format|
           format.json {

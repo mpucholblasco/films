@@ -11,6 +11,15 @@
 	<%= @disk.disk_type %>
 </p>
 
+<p>
+	<strong><%= t(:last_update) %>:</strong>
+	<% if @disk.last_sync %>
+		<%= l(@disk.last_sync) %>
+	<% else %>
+		<%= t(:last_update_not_set) %>
+	<% end -%>
+</p>
+
 <h2><%= t(:files) %></h2>
 <table>
 	<tr>

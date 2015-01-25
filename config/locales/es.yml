@@ -26,6 +26,7 @@ es:
   type: "Tipo"
   actions: "Acciones"
   last_update: "Última actualización"
+  last_update_not_set: "no actualizado"
   
   # Actions
   show: "Mostrar"
@@ -112,6 +113,7 @@ es:
     - :year
   time:
     formats:
-      default: ! '%A, %d de %B de %Y %H:%M:%S %z'
+      default: ! '%A, %d de %B de %Y %H:%M:%S'
       long: ! '%d de %B de %Y %H:%M:%S'
       short: ! '%d de %b %H:%M:%S'
+      simple: ! '%H:%M:%S %d/%m/%Y'

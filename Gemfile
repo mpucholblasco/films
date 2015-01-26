@@ -31,6 +31,9 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # `3.0.0.rc8` is the latest version of released RC version when this entry is changed, you might want to change it later
 gem "i18n-js", ">= 3.0.0.rc8" 
 
+# Queue gem system
+gem 'delayed_job_active_record'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 

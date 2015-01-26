@@ -20,6 +20,8 @@ Rails.application.routes.draw do
   get 'tools/find_series_duplicates' => 'tools#find_series_duplicates'
   get 'tools/stop_amule' => 'tools#stop_amule'
   get 'tools/start_amule' => 'tools#start_amule'
+  get 'tools/copy_from_server_to_external' => 'tools#copy_from_server_to_external'
+  get 'tools/copy_from_server_to_external/:id' => 'tools#copy_from_server_to_external_status'
 
   # Resources
   resources :disks do

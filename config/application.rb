@@ -24,5 +24,15 @@ module Films
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
+    
+    # Setting queue system
+    # Steps (extracted from http://5minutenpause.com/blog/2014/11/05/comprehensive-guide-to-background-processing-of-uploads-with-activejob-and-rails-4-dot-2/):
+    # 1. Add to Gemfile: gem 'delayed_job_active_record' & bundle install
+    # 2. Generate DB tables: rails generate delayed_job:active_record && rake db:migrate
+    # 3. Add this adapter
+    config.active_job.queue_adapter = :delayed_job
+    # 4. Create job: rails generate job post_process_upload
+    # 5. Change job code
+    # 6. Start jobs: https://github.com/collectiveidea/delayed_job#running-jobs
   end
 end

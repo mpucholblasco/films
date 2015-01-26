@@ -31,6 +31,19 @@ class ToolsController < ApplicationController
       @message = :server_started_error
     end
   end
+  
+  def copy_from_server_to_external
+    job = CopyFromServerToExternalJob.perform_later "This is a simple test"
+    logger.debug "Added job with info #{job.inspect}"
+    @job_id = job.job_id
+  end
+  
+  def copy_from_server_to_external_status
+    job_id = params[:id]
+    job_progress = DelayedJobProgress.find(job_id)
+    @progress = job_progress.progress
+    logger.debug "Obtaining progress for job_id #{job_id}"
+  end
 
   private
 

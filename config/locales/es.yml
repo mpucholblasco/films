@@ -51,6 +51,8 @@ es:
   stop_amule_description: "Para el servidor de amule."
   start_amule: "Iniciar amule"
   start_amule_description: "Inicia el servidor de amule."
+  copy_from_server_to_external: "Copiar ficheros del servidor a disco externo"
+  copy_from_server_to_external_description: "Copia los ficheros que se hayan descargado del amule y los copia en la carpeta procesar del disco externo insertado"
 
   # Pagination
   will_paginate:

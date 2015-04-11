@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150126183627) do
+ActiveRecord::Schema.define(version: 20150411170955) do
 
   create_table "delayed_job_progresses", primary_key: "job_id", force: :cascade do |t|
     t.integer  "progress_max",   limit: 4,   null: false
@@ -43,6 +43,8 @@ ActiveRecord::Schema.define(version: 20150126183627) do
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
     t.datetime "last_sync"
+    t.integer  "total_size", limit: 8
+    t.integer  "free_size",  limit: 8
   end
 
   add_index "disks", ["name"], name: "index_disks_on_name", unique: true, using: :btree

@@ -1,4 +1,7 @@
 class DisksController < ApplicationController
+  # We need to include this helper to use it in view
+  helper ToolsHelper
+
   DISK_MOUNT_PATH = '/media/usb/'
   def index
     @disks = Disk.paginate(:page => params[:page], per_page: 50).order(:name)
@@ -60,7 +63,7 @@ class DisksController < ApplicationController
       if disk.id != @disk.id
         respond_to do |format|
           format.json {
-            render json: { message: "Disk name '#{disk.name}' does not correspond to current disk name '#{@disk.name}'" }, status: 500
+            render json: { message: t(:update_error_inserted_disk_is_not_updating_one, :inserted_disk => disk.name, :updating_disk => @disk.name) }, status: 500
           }
         end
       else
@@ -73,7 +76,16 @@ class DisksController < ApplicationController
           end
           logger.info "Going to add <#{hard_disk_files_info.get_files_to_add.length}>"
           hard_disk_files_info.get_files_to_add.each do |file|
-            file.save
+            begin
+              file.save
+            rescue ActiveRecord::RecordNotUnique
+              logger.error "Duplicated file <#{file.filename}"
+              respond_to do |format|
+                format.json {
+                  render json: { message: t(:update_error_duplicated_file, :duplicated_filename => file.filename) }, status: 500
+                }
+              end
+            end
           end
           @disk.last_sync = Time.zone.now
           @disk.save()
@@ -89,14 +101,14 @@ class DisksController < ApplicationController
       logger.error "Found disk info, but disk does not exist on DB"
       respond_to do |format|
         format.json {
-          render json: { message: "Found disk info, but disk does not exist on DB" }, status: 500
+          render json: { message: t(:update_error_disk_not_in_db) }, status: 500
         }
       end
     rescue IOError
       logger.error "Disk information not found"
       respond_to do |format|
         format.json {
-          render json: { message: "Disk information not found" }, status: 500
+          render json: { message: t(:update_error_disk_information_not_found) }, status: 500
         }
       end
     end
@@ -105,6 +117,6 @@ class DisksController < ApplicationController
   private
 
   def disk_params
-    params.require(:disk).permit(:name, :disk_type)
+    params.require(:disk).permit(:name, :disk_type, :total_size, :free_size)
   end
 end

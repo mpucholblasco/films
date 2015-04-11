@@ -1,4 +1,6 @@
 require 'yaml'
+require 'sys/filesystem'
+include Sys
 
 module TasksHelper
   class FileDiskInfo < FileDisk
@@ -54,7 +56,7 @@ module TasksHelper
           if file_db_info
             if file_info == file_db_info
             files_on_db.delete(internal_filename)
-           else
+            else
             @files_to_remove << file_db_info
             @files_to_add << file_info
             end
@@ -86,6 +88,11 @@ module TasksHelper
       disk = HardDiskInfo.new
       disk.name = disk_info['name']
       disk.id = disk_info['id']
+
+      # Obtain disk space
+      stat_info = Filesystem.stat(filename)
+      disk.total_size = stat_info.block_size * stat_info.blocks
+      disk.free_size = stat_info.block_size * stat_info.blocks_free
       return disk
     end
 

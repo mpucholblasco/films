@@ -33,12 +33,14 @@
 <table>
 	<tr>
 		<th><%= t(:name) %></th>
+		<th><%= t(:size_mb) %></th>
 		<th><%= t(:disk) %></th>
 	</tr>
 
 	<% @files.each do |file| %>
 	<tr>
 		<td><%= file.filename %></td>
+		<td><%= file.size_mb %></td>
 		<td><%= link_to file.disk.name, disk_path(file.disk), :class => 'ref' %></td>
 	</tr>
 	<% end %>

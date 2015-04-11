@@ -20,6 +20,16 @@
 	<% end -%>
 </p>
 
+<p>
+  <strong><%= t(:total_size) %>:</strong>
+  <%= get_human_size(@disk.total_size) %>
+</p>
+
+<p>
+  <strong><%= t(:free_size) %>:</strong>
+  <%= get_human_size(@disk.free_size) %>
+</p>
+
 <h2><%= t(:files) %></h2>
 <table>
 	<tr>

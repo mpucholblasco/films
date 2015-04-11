@@ -1,28 +1,15 @@
-== README
+== Films
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Have your films organized.
 
-Things you may want to cover:
+This app will help you to keep all your films organized.
 
-* Ruby version
+Copying files to external
+-------------------------
+To copy files to an external USB, you need to have installed usbmount via:
+    sudo apt-get install usbmount
 
-* System dependencies
+To configure usbmount, edit file `/etc/usbmount/usbmount.conf` and set the following variable value:
+    FS_MOUNTOPTIONS="-fstype=vfat,gid=plugdev,dmask=0002,fmask=0113,utf8"
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+Ensure to remove `sync` from usbmount option.

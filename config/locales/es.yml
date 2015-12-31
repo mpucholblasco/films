@@ -17,13 +17,16 @@ es:
   # Files
   files: "Ficheros"
   filename: "Nombre del fichero"
+  total_files: "Total ficheros"
   size_mb: "Tamaño en MB"
   add_new_file: "Agregar un nuevo fichero"
   search_file: "Buscar fichero"
+  number_files: "Número de ficheros"
   files_search_not_found: "No se han encontrado ficheros que cumplan con los requisitos."
 
   # Downloads
   downloads: "Descargas"
+  total_downloads: "Total descargas"
   percentage: "Porcentaje"
   downloads_search_not_found: "No se han encontrado descargas que cumplan con los requisitos."
 

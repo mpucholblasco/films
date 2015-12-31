@@ -88,6 +88,8 @@ class DisksController < ApplicationController
             end
           end
           @disk.last_sync = Time.zone.now
+          @disk.total_size = disk.total_size
+          @disk.free_size = disk.free_size
           @disk.save()
         end
         respond_to do |format|

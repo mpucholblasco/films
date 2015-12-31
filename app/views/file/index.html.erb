@@ -9,6 +9,7 @@
 <h2><%= t(:downloads) %></h2>
 <% if @downloads_last_update && @downloads && ! @downloads.empty? %>
 <p><strong><%= t(:last_update) %>:</strong> <%= l(@downloads_last_update) %></p>
+<p><strong><%= t(:total_downloads) %>:</strong> <%= @downloads.count %></p>
 <table>
 	<tr>
 		<th><%= t(:name) %></th>
@@ -30,6 +31,7 @@
 <% if @files.empty? %>
 <p><%= t(:files_search_not_found)%></p>
 <% else %>
+<p><strong><%= t(:total_files) %>:</strong> <%= @files.count %></p>
 <table>
 	<tr>
 		<th><%= t(:name) %></th>

@@ -7,8 +7,9 @@
 		<th><%= t(:name) %></th>
 		<th><%= t(:type) %></th>
 		<th><%= t(:last_update) %></th>
-    <th><%= t(:total_size) %></th>
-    <th><%= t(:free_size) %></th>
+		<th><%= t(:total_size) %></th>
+		<th><%= t(:free_size) %></th>
+		<th><%= t(:number_files) %></th>
 		<th colspan="4"><%= t(:actions) %></th>
 	</tr>
 
@@ -17,8 +18,9 @@
 		<td><%= disk.name %></td>
 		<td><%= disk.disk_type %></td>
 		<td><% if disk.last_sync %><%= l(disk.last_sync, format: :simple) %><% end %></td>
-    <td><%= get_human_size(disk.total_size) %></td>
-    <td><%= get_human_size(disk.free_size) %></td>
+		<td><%= get_human_size(disk.total_size) %></td>
+		<td><%= get_human_size(disk.free_size) %></td>
+		<td><%= disk.file_disks.count %></td>
 		<td class="action"><%= link_to t(:show), disk_path(disk), :class => 'button' %></td>
 		<td class="action"><%= link_to t(:update_content), update_content_path(disk), :class => 'button' %></td>
 		<td class="action"><%= link_to t(:edit), edit_disk_path(disk), :class => 'button' %></td>

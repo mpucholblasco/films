@@ -2,6 +2,7 @@
 
 <% if @downloads_last_update && @downloads && ! @downloads.empty? %>
 <p><strong><%= t(:last_update) %>:</strong> <%= l(@downloads_last_update, format: :long) %></p>
+<p><strong><%= t(:total_downloads) %>:</strong> <%= @downloads.count %></p>
 <table>
 	<tr>
 		<th><%= t(:filename) %></th>

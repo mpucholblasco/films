@@ -107,6 +107,11 @@ module TasksHelper
       raise SyntaxError.new("Incorrect info file format") if not line1_match
       disk.id = line1_match[1].to_i
       disk.name = content_lines[1].strip()
+
+      # Obtain disk space
+      stat_info = Filesystem.stat(filename)
+      disk.total_size = stat_info.block_size * stat_info.blocks
+      disk.free_size = stat_info.block_size * stat_info.blocks_free
       return disk
     end
 

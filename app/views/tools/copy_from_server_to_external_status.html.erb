@@ -1,3 +1,19 @@
 <h1><%= link_to t(:tools), tools_path %> / <%= t(:copy_from_server_to_external) %></h1>
 
-<p>Progress: <%= @progress %></p>
+<%= t(:progress) %>: <span id="progresstext"><%= @progress %></span>% <progress id="progress" value="<%= @progress %>" max="100"></progress>
+
+<script language="JavaScript">
+var pollProgressStatus = function() {
+	$(function() {
+		$.getJSON(window.location.href, function(response) {
+			console.log('poll progress status with value: ' + response.progress);
+			if (response.progress != 100) {
+				setTimeout(pollProgressStatus, 1000);
+			}
+			$('#progress').attr('value', response.progress);
+			$('#progresstext').replaceWith(response.progress);
+		});
+	});
+}
+setTimeout(pollProgressStatus, 1000);
+</script>

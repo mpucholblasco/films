@@ -35,8 +35,10 @@
 	<tr>
 		<th><%= t(:filename) %></th>
 		<th><%= t(:size_mb) %></th>
-		<th><%= t(:actions) %></th>
+		<th><%= t(:score) %></th>
+		<th colspan="2"><%= t(:actions) %></th>
 	</tr>
+	<% @link_to_back = URI.encode(Base64.encode64(request.path)) %>
 	<%= render @file_disks %>
 </table>
 <%= will_paginate @file_disks %>

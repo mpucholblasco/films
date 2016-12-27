@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   # Disks
   get 'disks/:id/update_content' => 'disks#update_content', as: :update_content
   post 'disks/:id/update_content' => 'disks#updating_content', as: :updating_content
-  
+
   # Downloads
   get 'downloads' => 'downloads#index'
   post 'downloads' => 'downloads#store'
@@ -27,6 +27,8 @@ Rails.application.routes.draw do
   resources :disks do
     resources :file_disks
   end
+
+  resources :hash_files
 
 # The priority is based upon order of creation: first created -> highest priority.
 # See how all your routes lay out with "rake routes".

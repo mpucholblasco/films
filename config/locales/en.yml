@@ -4,18 +4,19 @@ en:
   new_disk: "New disk"
   disk_prohibited_error: "Prohibited this disk from being saved"
   update_content_message: "Insert disk '%{disk_name}' on server an click on start button."
-  
+
   # Files
   files: "Files"
   filename: "File name"
   size_mb: "Size MB"
   add_new_file: "Add a new file"
-  
+  score: "Score"
+
   # Global
   name: "Name"
   type: "Type"
   actions: "Actions"
-  
+
   # Actions
   show: "Show"
   update_content: "Update content"

@@ -15,7 +15,7 @@ default: &default
   pool: 5
   username: films
   password: rankdom
-  host: localhost
+  host: 10.210.0.10
 
 development:
   <<: *default

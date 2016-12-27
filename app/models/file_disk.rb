@@ -1,5 +1,6 @@
 class FileDisk < ActiveRecord::Base
   belongs_to :disk
+  belongs_to :hash_file, class_name: 'HashFile', foreign_key: 'hash_id'
   def self.search(search, page)
     if search
       search = search.strip

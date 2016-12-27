@@ -1,0 +1,24 @@
+<h1><%= t(:hash_files) %></h1>
+
+<table>
+	<tr>
+		<th><%= t(:id) %></th>
+		<th><%= t(:score) %></th>
+		<th colspan="3"><%= t(:actions) %></th>
+	</tr>
+
+	<% @hash_files.each do |hash_file| %>
+	<tr>
+		<td><%= hash_file.id %></td>
+		<td><%= hash_file.score %></td>
+		<td class="action"><%= link_to t(:show), hash_file_path(hash_file), :class => 'button' %></td>
+		<td class="action"><%= link_to t(:edit), edit_hash_file_path(hash_file), :class => 'button' %></td>
+		<td class="action"><%= link_to t(:destroy), hash_file_path(hash_file),
+		method: :delete,
+		data: { confirm: t(:question_sure) }, :class => 'button' %></td>
+	</tr>
+	<% end %>
+</table>
+
+
+<%= will_paginate @hash_files %>

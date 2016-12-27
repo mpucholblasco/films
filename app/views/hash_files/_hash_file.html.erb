@@ -5,5 +5,4 @@
 	<td class="action"><%= link_to t(:destroy), [file_disk.disk, file_disk],
 	method: :delete,
 	data: { confirm: t(:question_sure) }, :class => 'button' %></td>
-	<td class="action"><%= file_disk.hash_id.nil? ? '' : link_to(t(:edit), edit_hash_file_path(file_disk.hash_id, :link_to_back => @link_to_back), :class => 'button') %></td>
 </tr>

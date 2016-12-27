@@ -71,34 +71,32 @@ class DisksController < ApplicationController
       else
         logger.info "Found disk info: #{disk.inspect}"
         hard_disk_files_info = TasksHelper::HardDiskFilesInfo.new(DISK_MOUNT_PATH, @disk.id, true)
-        TasksHelper::HardDiskInfo.transaction do
-          logger.info "Going to delete <#{hard_disk_files_info.get_files_to_remove.length}>"
-          hard_disk_files_info.get_files_to_remove.each do |file|
-            file.delete
-          end
-          logger.info "Going to add <#{hard_disk_files_info.get_files_to_add.length}>"
-          hard_disk_files_info.get_files_to_add.each do |file|
-            begin
-              logger.info "Obtaining SHA256 for file: #{file.inspect}"
-              file.hash_id = Digest::SHA256.file(DISK_MOUNT_PATH + '/' + file.filename).hexdigest
-              hash_file = HashFile.new
-              hash_file.id = file.hash_id
-              hash_file.save # ignored if hash already exists
-              file.save
-            rescue ActiveRecord::RecordNotUnique
-              logger.error "Duplicated file <#{file.filename}"
-              respond_to do |format|
-                format.json {
-                  render json: { message: t(:update_error_duplicated_file, :duplicated_filename => file.filename) }, status: 500
-                }
-              end
+        logger.info "Going to delete <#{hard_disk_files_info.get_files_to_remove.length}>"
+        hard_disk_files_info.get_files_to_remove.each do |file|
+          file.delete
+        end
+        logger.info "Going to add <#{hard_disk_files_info.get_files_to_add.length}>"
+        hard_disk_files_info.get_files_to_add.each do |file|
+          begin
+            logger.info "Obtaining SHA256 for file: #{file.inspect}"
+            file.hash_id = Digest::SHA256.file(DISK_MOUNT_PATH + '/' + file.filename).hexdigest
+            hash_file = HashFile.new
+            hash_file.id = file.hash_id
+            hash_file.save # ignored if hash already exists
+            file.save
+          rescue ActiveRecord::RecordNotUnique
+            logger.error "Duplicated file <#{file.filename}"
+            respond_to do |format|
+              format.json {
+                render json: { message: t(:update_error_duplicated_file, :duplicated_filename => file.filename) }, status: 500
+              }
             end
           end
-          @disk.last_sync = Time.zone.now
-          @disk.total_size = disk.total_size
-          @disk.free_size = disk.free_size
-          @disk.save()
         end
+        @disk.last_sync = Time.zone.now
+        @disk.total_size = disk.total_size
+        @disk.free_size = disk.free_size
+        @disk.save()
         respond_to do |format|
           format.json {
             render json: { deleted: hard_disk_files_info.get_files_to_remove.length,

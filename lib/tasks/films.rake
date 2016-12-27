@@ -59,7 +59,7 @@ namespace :films do
           begin
             file.save
           rescue
-            file.filename = file.filename.encode('UTF-8', :invalid => :replace, :undef => :replace) 
+            file.filename = file.filename.encode('UTF-8', :invalid => :replace, :undef => :replace)
             file.save
           end
         end

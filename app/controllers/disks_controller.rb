@@ -77,6 +77,9 @@ class DisksController < ApplicationController
           logger.info "Going to add <#{hard_disk_files_info.get_files_to_add.length}>"
           hard_disk_files_info.get_files_to_add.each do |file|
             begin
+              hash_file = HashFile.new
+              hash_file.id = file.hash_id
+              hash_file.save # ignored if hash already exists
               file.save
             rescue ActiveRecord::RecordNotUnique
               logger.error "Duplicated file <#{file.filename}"

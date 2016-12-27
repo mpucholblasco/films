@@ -23,6 +23,9 @@ es:
   search_file: "Buscar fichero"
   number_files: "Número de ficheros"
   files_search_not_found: "No se han encontrado ficheros que cumplan con los requisitos."
+  score: "Puntuación"
+  hash_files: "Hash"
+  hash_info: "Información"
 
   # Downloads
   downloads: "Descargas"

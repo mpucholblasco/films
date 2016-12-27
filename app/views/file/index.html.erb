@@ -36,18 +36,21 @@
 	<tr>
 		<th><%= t(:name) %></th>
 		<th><%= t(:size_mb) %></th>
+		<th><%= t(:score) %></th>
 		<th><%= t(:disk) %></th>
+		<th><%= t(:actions) %></th>
 	</tr>
-
+	<% @link_to_back = URI.encode(Base64.encode64(request.fullpath)) %>
 	<% @files.each do |file| %>
 	<tr>
 		<td><%= file.filename %></td>
 		<td><%= file.size_mb %></td>
+		<td><%= file.hash_file.score if not file.hash_file.nil? and not file.hash_file.score.nil? %></td>
 		<td><%= link_to file.disk.name, disk_path(file.disk), :class => 'ref' %></td>
+		<td class="action"><%= file.hash_id.nil? ? '' : link_to(t(:edit), edit_hash_file_path(file.hash_id, :link_to_back => @link_to_back), :class => 'button') %></td>
 	</tr>
 	<% end %>
 </table>
 
 <%= will_paginate @files %>
 <% end -%>
-

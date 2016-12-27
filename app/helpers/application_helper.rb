@@ -17,7 +17,7 @@ module ApplicationHelper
   def files_link
     nav_item_active_if current_page?(files_path), t(:files), controller: 'file'
   end
-  
+
   def tools_link
     nav_item_active_if current_page?(tools_path), t(:tools), controller: 'tools'
   end
@@ -26,6 +26,6 @@ module ApplicationHelper
     if condition
       a_class = "active"
     end
-    link_to name, attributes, :class => a_class 
+    link_to name, attributes, :class => a_class
   end
 end

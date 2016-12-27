@@ -1,0 +1,27 @@
+<%= form_for @hash_file do |f| %>
+
+<% if @hash_file and @hash_file.errors.any? %>
+<div id="error_explanation">
+	<h2> <%= pluralize(@disk.errors.count, "error") %> <%= t(:disk_prohibited_error) %>: </h2>
+	<ul>
+		<% @hash_file.errors.full_messages.each do |msg| %>
+		<li>
+			<%= msg %>
+		</li>
+		<% end %>
+	</ul>
+</div>
+<% end %>
+
+<p>
+	<%= f.label t(:score) %>
+	<br>
+	<%= f.text_field :score %>
+</p>
+<p>
+	<%= f.submit :class => 'button' %>
+</p>
+  <%- if not params[:link_to_back].nil? -%>
+<input name="link_to_back" type="hidden" value="<%= params[:link_to_back] %>"/>
+  <%- end -%>
+<% end %>

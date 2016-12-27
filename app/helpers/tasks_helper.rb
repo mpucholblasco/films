@@ -9,6 +9,7 @@ module TasksHelper
       file_disk_info.filename = internal_filename
       file_disk_info.size_mb = File.size(filename) / 1024 / 1024
       file_disk_info.disk_id = disk_id
+      file_disk_info.real_filename = filename
       return file_disk_info
     end
 

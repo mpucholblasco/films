@@ -1,6 +1,5 @@
 require 'yaml'
 require 'sys/filesystem'
-require 'digest'
 include Sys
 
 module TasksHelper
@@ -10,7 +9,6 @@ module TasksHelper
       file_disk_info.filename = internal_filename
       file_disk_info.size_mb = File.size(filename) / 1024 / 1024
       file_disk_info.disk_id = disk_id
-      file_disk_info.hash_id = Digest::SHA256.file(filename).hexdigest
       return file_disk_info
     end
 

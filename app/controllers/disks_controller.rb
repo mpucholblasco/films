@@ -81,10 +81,14 @@ class DisksController < ApplicationController
         hard_disk_files_info.get_files_to_add.each do |file|
           begin
             logger.info "Obtaining SHA256 for file: #{file.inspect}"
-            file.hash_id = Digest::SHA256.file(DISK_MOUNT_PATH + '/' + file.filename).hexdigest
-            hash_file = HashFile.new
-            hash_file.id = file.hash_id
-            hash_file.save # ignored if hash already exists
+            begin
+              file.hash_id = Digest::SHA256.file(DISK_MOUNT_PATH + '/' + file.filename).hexdigest
+              hash_file = HashFile.new
+              hash_file.id = file.hash_id
+              hash_file.save # ignored if hash already exists
+            rescue
+              logger.error "Error generating hash. Ignoring file: #{file.filename}"
+            end
             file.save
           rescue ActiveRecord::RecordNotUnique
             logger.error "Duplicated file <#{file.filename}"

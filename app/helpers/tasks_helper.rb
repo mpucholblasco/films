@@ -22,7 +22,7 @@ module TasksHelper
   class HardDiskFilesInfo
     PATHS_TO_PROCESS = [ "Peliculas", "Series", "procesar", "Incoming" ]
 
-    def initialize(mount, disk_id, remove_no_hash = False)
+    def initialize(mount, disk_id, remove_no_hash = false)
       @mount = File.realpath(mount)
       @disk_id = disk_id
       @processed = false

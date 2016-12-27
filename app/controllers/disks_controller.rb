@@ -70,7 +70,7 @@ class DisksController < ApplicationController
         end
       else
         logger.info "Found disk info: #{disk.inspect}"
-        hard_disk_files_info = TasksHelper::HardDiskFilesInfo.new(DISK_MOUNT_PATH, @disk.id, True)
+        hard_disk_files_info = TasksHelper::HardDiskFilesInfo.new(DISK_MOUNT_PATH, @disk.id, true)
         TasksHelper::HardDiskInfo.transaction do
           logger.info "Going to delete <#{hard_disk_files_info.get_files_to_remove.length}>"
           hard_disk_files_info.get_files_to_remove.each do |file|

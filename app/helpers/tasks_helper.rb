@@ -21,12 +21,13 @@ module TasksHelper
   class HardDiskFilesInfo
     PATHS_TO_PROCESS = [ "Peliculas", "Series", "procesar", "Incoming" ]
 
-    def initialize(mount, disk_id)
+    def initialize(mount, disk_id, remove_no_hash = False)
       @mount = File.realpath(mount)
       @disk_id = disk_id
       @processed = false
       @files_to_remove = []
       @files_to_add = []
+      @remove_no_hash = remove_no_hash
     end
 
     def get_files_to_remove
@@ -54,14 +55,14 @@ module TasksHelper
           file_info = FileDiskInfo.create_from_filename(file, internal_filename, @disk_id)
           file_db_info = files_on_db[internal_filename]
           if file_db_info
-            if file_info == file_db_info
-            files_on_db.delete(internal_filename)
+            if file_info == file_db_info and (not @remove_no_hash or not file_db_info.hash_id.nil?)
+              files_on_db.delete(internal_filename)
             else
-            @files_to_remove << file_db_info
-            @files_to_add << file_info
+              @files_to_remove << file_db_info
+              @files_to_add << file_info
             end
           else
-          @files_to_add << file_info
+            @files_to_add << file_info
           end
         end
       end

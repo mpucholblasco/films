@@ -11,7 +11,7 @@ class DisksController < ApplicationController
 
   def show
     @disk = Disk.find(params[:id])
-    @file_disks = @disk.file_disks.paginate(:page => params[:page], per_page: 50)
+    @file_disks = @disk.file_disks.where(:deleted => false).paginate(:page => params[:page], per_page: 50)
   end
 
   def new
@@ -60,59 +60,19 @@ class DisksController < ApplicationController
 
     logger.info "Updating disk mounted on <#{DISK_MOUNT_PATH}>"
     begin
-      disk = TasksHelper::HardDiskInfo.read_from_mounted_disk(DISK_MOUNT_PATH)
-      disk.ensure_exists
-      if disk.id != @disk.id
-        respond_to do |format|
-          format.json {
-            render json: { message: t(:update_error_inserted_disk_is_not_updating_one, :inserted_disk => disk.name, :updating_disk => @disk.name) }, status: 500
-          }
-        end
-      else
-        logger.info "Found disk info: #{disk.inspect}"
-        hard_disk_files_info = TasksHelper::HardDiskFilesInfo.new(DISK_MOUNT_PATH, @disk.id, true)
-        TasksHelper::HardDiskInfo.transaction do
-          logger.info "Going to delete <#{hard_disk_files_info.get_files_to_remove.length}>"
-          hard_disk_files_info.get_files_to_remove.each do |file|
-            file.delete
-          end
-        end
-        logger.info "Going to add <#{hard_disk_files_info.get_files_to_add.length}>"
-        hard_disk_files_info.get_files_to_add.each do |file|
-          begin
-            file.save
-          rescue ActiveRecord::RecordNotUnique
-            logger.error "Duplicated file <#{file.filename}"
-            respond_to do |format|
-              format.json {
-                render json: { message: t(:update_error_duplicated_file, :duplicated_filename => file.filename) }, status: 500
-              }
-            end
-          end
-        end
-        @disk.last_sync = Time.zone.now
-        @disk.total_size = disk.total_size
-        @disk.free_size = disk.free_size
-        @disk.save()
-        respond_to do |format|
-          format.json {
-            render json: { deleted: hard_disk_files_info.get_files_to_remove.length,
-            added: hard_disk_files_info.get_files_to_add.length }
-          }
-        end
-      end
-    rescue ActiveRecord::RecordNotFound
-      logger.error "Found disk info, but disk does not exist on DB"
+      hard_disk_files_info = TasksHelper::HardDiskFilesInfo.new(DISK_MOUNT_PATH, @disk.id)
+      hard_disk_files_info.process
       respond_to do |format|
         format.json {
-          render json: { message: t(:update_error_disk_not_in_db) }, status: 500
+          render json: { deleted: hard_disk_files_info.get_files_to_remove.length,
+          added: hard_disk_files_info.get_files_to_add.length,
+          updated: hard_disk_files_info.get_files_to_update.length }
         }
       end
-    rescue IOError
-      logger.error "Disk information not found"
+    rescue Exception => ex
       respond_to do |format|
         format.json {
-          render json: { message: t(:update_error_disk_information_not_found) }, status: 500
+          render json: { message: ex.message }, status: 500
         }
       end
     end

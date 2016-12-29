@@ -27,9 +27,7 @@ Rails.application.routes.draw do
   resources :disks do
     resources :file_disks
   end
-
-  resources :hash_files
-
+  
 # The priority is based upon order of creation: first created -> highest priority.
 # See how all your routes lay out with "rake routes".
 

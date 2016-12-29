@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161224183801) do
+ActiveRecord::Schema.define(version: 20161228111227) do
 
   create_table "delayed_job_progresses", primary_key: "job_id", force: :cascade do |t|
     t.integer  "progress_max",   limit: 4,   null: false
@@ -60,20 +60,15 @@ ActiveRecord::Schema.define(version: 20161224183801) do
     t.string   "filename",   limit: 255
     t.integer  "size_mb",    limit: 4
     t.integer  "disk_id",    limit: 4
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-    t.string   "hash_id",    limit: 64
+    t.datetime "created_at",                                                     null: false
+    t.datetime "updated_at",                                                     null: false
+    t.decimal  "score",                  precision: 5, scale: 2
+    t.boolean  "deleted",    limit: 1,                           default: false, null: false
   end
 
+  add_index "file_disks", ["deleted"], name: "index_file_disks_on_deleted", using: :btree
   add_index "file_disks", ["disk_id", "filename"], name: "index_file_disks_on_disk_id_and_filename", unique: true, using: :btree
   add_index "file_disks", ["disk_id"], name: "index_file_disks_on_disk_id", using: :btree
-  add_index "file_disks", ["hash_id"], name: "fk_rails_0a4567b7a3", using: :btree
-
-  create_table "hash_files", force: :cascade do |t|
-    t.decimal  "score",      precision: 5, scale: 2
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "update_stats", force: :cascade do |t|
     t.string   "name",         limit: 255
@@ -85,5 +80,4 @@ ActiveRecord::Schema.define(version: 20161224183801) do
   add_index "update_stats", ["name"], name: "index_update_stats_on_name", unique: true, using: :btree
 
   add_foreign_key "file_disks", "disks"
-  add_foreign_key "file_disks", "hash_files", column: "hash_id"
 end

@@ -1,6 +1,12 @@
 class FileDisk < ActiveRecord::Base
+  RE_FILENAME_ID = /\[([^\]]+)\]\.[^.]+/
   belongs_to :disk
   belongs_to :hash_file, class_name: 'HashFile', foreign_key: 'hash_id'
+
+  def self.get_id_from_filename
+    # TODO mpucholblasco
+  end
+
   def self.search(search, page)
     if search
       search = search.strip
@@ -15,7 +21,7 @@ class FileDisk < ActiveRecord::Base
             w = "filename like '%#{p.join('%')}%'"
           end
         }
-        matches = where(w).order('filename')
+        matches = where("(" + w + ") AND deleted = false").order('filename')
       else
         matches = all
       end

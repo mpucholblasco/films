@@ -1,4 +1,17 @@
-<%= form_for([@disk, @disk.file_disks.build]) do |f| %>
+<% if @file_disk and @file_disk.errors.any? %>
+<div id="error_explanation">
+	<h2> <%= pluralize(@file_disk.errors.count, "error") %> <%= t(:file_disk_error) %>: </h2>
+	<ul>
+		<% @file_disk.errors.full_messages.each do |msg| %>
+		<li>
+			<%= msg %>
+		</li>
+		<% end %>
+	</ul>
+</div>
+<% end %>
+
+<%= form_for([@disk, @file_disk]) do |f| %>
 <p>
 	<%= f.label t(:filename) %>
 	<br>
@@ -9,6 +22,12 @@
 	<br>
 	<%= f.text_field :size_mb %>
 </p>
+<p>
+	<%= f.label t(:score) %>
+	<br>
+	<%= f.text_field :score %>
+</p>
+<input name="link_to_back" type="hidden" value="<%= params[:link_to_back] %>"/>
 <p>
 	<%= f.submit :class => 'button' %>
 </p>

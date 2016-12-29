@@ -26,6 +26,7 @@ es:
   score: "Puntuación"
   hash_files: "Hash"
   hash_info: "Información"
+  file_disk_error: "Error en campo de fichero"
 
   # Downloads
   downloads: "Descargas"

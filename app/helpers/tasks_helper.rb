@@ -13,6 +13,7 @@ module TasksHelper
     end
 
     def ==(other)
+      other.id == self.id and
       other.filename == self.filename and
       other.size_mb == self.size_mb
     end

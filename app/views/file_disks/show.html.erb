@@ -1,0 +1,15 @@
+<h1><%= @file_disk.filename %></h1>
+
+<%= link_to 'Edit', edit_disk_file_disk_path(:id => @file_disk.id, :disk_id => @file_disk.disk_id), :class => 'button' %>
+<p>
+	<strong><%= t(:filename) %>:</strong>
+	<%= @file_disk.filename %>
+</p>
+<p>
+	<strong><%= t(:size_mb) %>:</strong>
+	<%= @file_disk.size_mb %>
+</p>
+<p>
+	<strong><%= t(:score) %>:</strong>
+	<%= @file_disk.score %>
+</p>

@@ -44,33 +44,10 @@ namespace :films do
 
     logger.info "Updating disk mounted on <#{args.mount}>"
     begin
-      disk = TasksHelper::HardDiskInfo.read_from_mounted_disk(args.mount)
-      disk.ensure_exists
-      logger.info "Found disk info: #{disk.inspect}"
-      hard_disk_files_info = TasksHelper::HardDiskFilesInfo.new(args.mount, disk.id)
-      logger.info "Going to delete <#{hard_disk_files_info.get_files_to_remove.length}> and to add <#{hard_disk_files_info.get_files_to_add.length}>"
-      TasksHelper::HardDiskInfo.transaction do
-        logger.info "Going to delete <#{hard_disk_files_info.get_files_to_remove.length}>"
-        hard_disk_files_info.get_files_to_remove.each do |file|
-          file.delete
-        end
-        logger.info "Going to add <#{hard_disk_files_info.get_files_to_add.length}>"
-        hard_disk_files_info.get_files_to_add.each do |file|
-          begin
-            file.save
-          rescue
-            file.filename = file.filename.encode('UTF-8', :invalid => :replace, :undef => :replace)
-            file.save
-          end
-        end
-        disk_db = Disk.find(disk.id)
-        disk_db.last_sync = Time.zone.now
-        disk_db.save()
-      end
-    rescue ActiveRecord::RecordNotFound
-      logger.error "Found disk info, but disk does not exist on DB"
-    rescue IOError
-      logger.error "Disk information not found"
+      hard_disk_files_info = TasksHelper::HardDiskFilesInfo.new(args.mount)
+      hard_disk_files_info.process
+    rescue Exception => ex
+      logger.error ex.message
     end
   end
 end

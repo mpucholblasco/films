@@ -3,47 +3,103 @@ require 'sys/filesystem'
 include Sys
 
 module TasksHelper
-  class FileDiskInfo < FileDisk
-    def self.create_from_filename(filename, internal_filename, disk_id)
-      file_disk_info = FileDiskInfo.new
-      file_disk_info.filename = internal_filename
-      file_disk_info.size_mb = File.size(filename) / 1024 / 1024
-      file_disk_info.disk_id = disk_id
-      return file_disk_info
-    end
-
-    def ==(other)
-      other.id == self.id and
-      other.filename == self.filename and
-      other.size_mb == self.size_mb
-    end
-  end
-
   class HardDiskFilesInfo
     PATHS_TO_PROCESS = [ "Peliculas", "Series", "procesar", "Incoming" ]
 
-    def initialize(mount, disk_id, remove_no_hash = false)
+    def initialize(mount, disk_id)
       @mount = File.realpath(mount)
       @disk_id = disk_id
       @processed = false
       @files_to_remove = []
       @files_to_add = []
-      @remove_no_hash = remove_no_hash
+      @files_to_update = []
     end
 
     def get_files_to_remove
-      process if not @processed
-      return @files_to_remove
+      process_info if not @processed
+      @files_to_remove
     end
 
     def get_files_to_add
-      process if not @processed
-      return @files_to_add
+      process_info if not @processed
+      @files_to_add
+    end
+
+    def get_files_to_update
+      process_info if not @processed
+      @files_to_update
+    end
+
+    def process
+      process_info if not @processed
+      disk = nil
+      errors = ''
+      begin
+        disk = TasksHelper::HardDiskInfo.read_from_mounted_disk(@mount)
+        disk.ensure_exists
+      rescue ActiveRecord::RecordNotFound
+        raise Exception.new(t(:update_error_disk_not_in_db))
+      rescue IOError
+        raise Exception.new(t(:update_error_disk_information_not_found))
+      end
+
+      if !@disk_id.nil? and disk.id != @disk_id
+        raise Exception.new(t(:update_error_inserted_disk_is_not_updating_one, :inserted_disk => disk.id, :updating_disk => @disk_id))
+      end
+
+      # Mark deleted files as deleted
+      FileDisk.transaction do
+        logger.info "Going to delete <#{@files_to_remove.length}>"
+        @files_to_remove.each do |file|
+          file.deleted = true
+          file.update
+        end
+      end
+
+      logger.info "Going to add <#{@files_to_add.length}>"
+      @files_to_add.each do |file|
+        begin
+          FileDisk.transaction do
+            file.save
+            file.append_id_to_filename
+            file.update
+            File.rename("#{@mount}/#{file.original_name}", "#{@mount}/#{file.filename}")
+          end
+        rescue IOException
+          errors << t(:update_error_couldnt_rename_file, :original_name => file.original_name, :target_name => file.filename) << '\n'
+        rescue ActiveRecord::RecordNotUnique
+          errors << t(:update_error_duplicated_file, :duplicated_filename => file.filename) << '\n'
+        end
+      end
+
+      logger.info "Going to update <#{@files_to_update.length}>"
+      @files_to_update.each do |file|
+        begin
+          FileDisk.transaction do
+            file.update
+            File.rename("#{@mount}/#{file.original_name}", "#{@mount}/#{file.filename}") if file.original_name != file.filename
+          end
+        rescue IOException
+          errors << t(:update_error_couldnt_rename_file, :original_name => file.original_name, :target_name => file.filename) << '\n'
+        rescue ActiveRecord::RecordNotUnique
+          errors << t(:update_error_duplicated_file, :duplicated_filename => file.filename) << '\n'
+        end
+      end
+
+      disk_db = Disk.find(disk.id)
+      disk_db.last_sync = Time.zone.now
+      disk_db.total_size = disk.total_size
+      disk_db.free_size = disk.free_size
+      disk_db.save()
+
+      if not errors.empty?
+        raise Exception.new(errors)
+      end
     end
 
     private
 
-    def process
+    def process_info
       files_on_db = {}
       Disk.find(@disk_id).file_disks.each do |file_disk|
         files_on_db[file_disk.filename] = file_disk
@@ -53,16 +109,22 @@ module TasksHelper
         files = Dir.glob("#{@mount}/#{path}/**/*").select{ |e| File.file? e }
         files.each do |file|
           internal_filename = file[(@mount.length+1)..-1]
-          file_info = FileDiskInfo.create_from_filename(file, internal_filename, @disk_id)
-          file_db_info = files_on_db[internal_filename]
-          if file_db_info
-            if file_info == file_db_info and (not @remove_no_hash or not file_db_info.hash_id.nil?)
-              files_on_db.delete(internal_filename)
-            else
-              @files_to_remove << file_db_info
-              @files_to_add << file_info
+          file_on_disk_db = files_on_db[internal_filename]
+          file_on_db = FileDisk.find_using_filename_with_id(internal_filename)
+          file_info = FileDisk.create_from_filename(file, internal_filename, @disk_id)
+          if file_on_db
+            file_info.copy_extra_data(file_on_db)
+            files_on_disk_db.delete(internal_filename)
+            if file_info != file_on_disk_db
+              file_info.append_id_to_filename
+              @files_to_update << file_info
             end
-          else
+          elsif file_on_disk_db
+            file_info.copy_extra_data(file_on_disk_db)
+            file_info.append_id_to_filename
+            files_on_disk_db.delete(internal_filename)
+            @files_to_update << file_info
+          else # not present neither on DB nor disk_DB -> it's new
             @files_to_add << file_info
           end
         end

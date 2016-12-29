@@ -1,8 +1,0 @@
-<tr>
-	<td><%= file_disk.filename %></td>
-	<td><%= file_disk.size_mb %></td>
-	<td><%= file_disk.hash_file.score if not file_disk.hash_file.nil? and not file_disk.hash_file.score.nil? %></td>
-	<td class="action"><%= link_to t(:destroy), [file_disk.disk, file_disk],
-	method: :delete,
-	data: { confirm: t(:question_sure) }, :class => 'button' %></td>
-</tr>

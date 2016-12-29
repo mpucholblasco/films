@@ -1,9 +1,9 @@
 <tr>
 	<td><%= file_disk.filename %></td>
 	<td><%= file_disk.size_mb %></td>
-	<td><%= file_disk.hash_file.score if not file_disk.hash_file.nil? and not file_disk.hash_file.score.nil? %></td>
+	<td><%= file_disk.score %></td>
 	<td class="action"><%= link_to t(:destroy), [file_disk.disk, file_disk],
 	method: :delete,
 	data: { confirm: t(:question_sure) }, :class => 'button' %></td>
-	<td class="action"><%= file_disk.hash_id.nil? ? '' : link_to(t(:edit), edit_hash_file_path(file_disk.hash_id, :link_to_back => @link_to_back), :class => 'button') %></td>
+	<td class="action"><%= link_to(t(:edit), edit_disk_file_disk_path(:id => file_disk.id, :disk_id => file_disk.disk_id, :link_to_back => @link_to_back), :class => 'button') %></td>
 </tr>

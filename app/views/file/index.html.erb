@@ -45,9 +45,13 @@
 	<tr>
 		<td><%= file.filename %></td>
 		<td><%= file.size_mb %></td>
-		<td><%= file.hash_file.score if not file.hash_file.nil? and not file.hash_file.score.nil? %></td>
+		<td><%= file.score %></td>
 		<td><%= link_to file.disk.name, disk_path(file.disk), :class => 'ref' %></td>
-		<td class="action"><%= file.hash_id.nil? ? '' : link_to(t(:edit), edit_hash_file_path(file.hash_id, :link_to_back => @link_to_back), :class => 'button') %></td>
+		<td class="action"><%= link_to t(:destroy), [file.disk, file],
+		method: :delete,
+		data: { confirm: t(:question_sure) }, :class => 'button' %></td>
+
+		<td class="action"><%= link_to(t(:edit), edit_disk_file_disk_path(:id => file.id, :disk_id => file.disk_id, :link_to_back => @link_to_back), :class => 'button') %></td>
 	</tr>
 	<% end %>
 </table>

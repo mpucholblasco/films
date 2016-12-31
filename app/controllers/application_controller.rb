@@ -15,12 +15,14 @@ class ApplicationController < ActionController::Base
   private
 
   def set_correct_locale
-    request.env['HTTP_ACCEPT_LANGUAGE'].scan(/[a-z]{2}/).uniq.each do |locale|
-      logger.debug "Testing locale #{locale}"
-      begin
-        I18n.locale = locale
-        return
-      rescue
+    if request.env['HTTP_ACCEPT_LANGUAGE']
+      request.env['HTTP_ACCEPT_LANGUAGE'].scan(/[a-z]{2}/).uniq.each do |locale|
+        logger.debug "Testing locale #{locale}"
+        begin
+          I18n.locale = locale
+          return
+        rescue
+        end
       end
     end
     logger.debug "Valid locale not found, setting default locale"

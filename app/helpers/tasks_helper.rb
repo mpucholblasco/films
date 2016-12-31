@@ -99,11 +99,17 @@ module TasksHelper
 
     private
 
-    def process_info
+    def get_files_on_db
       files_on_db = {}
       Disk.find(@disk_id).file_disks.each do |file_disk|
         files_on_db[file_disk.filename] = file_disk
       end
+      return files_on_db
+    end
+
+    def process_info
+      files_on_db = get_files_on_db
+      ids_updated = Set.new
 
       PATHS_TO_PROCESS.each do |path|
         files = Dir.glob("#{@mount}/#{path}/**/*").select{ |e| File.file? e }
@@ -112,24 +118,29 @@ module TasksHelper
           file_on_disk_db = files_on_db[internal_filename]
           file_on_db = FileDisk.find_using_filename_with_id(internal_filename)
           file_info = FileDisk.create_from_filename(file, internal_filename, @disk_id)
+
           if file_on_db
             file_info.copy_extra_data(file_on_db)
-            files_on_disk_db.delete(internal_filename)
+            files_on_db.delete(internal_filename)
             if file_info != file_on_disk_db
               file_info.append_id_to_filename
               @files_to_update << file_info
+              ids_updated.add(file_info.id)
             end
           elsif file_on_disk_db
             file_info.copy_extra_data(file_on_disk_db)
             file_info.append_id_to_filename
-            files_on_disk_db.delete(internal_filename)
+            files_on_db.delete(internal_filename)
             @files_to_update << file_info
+            ids_updated.add(file_info.id)
           else # not present neither on DB nor disk_DB -> it's new
             @files_to_add << file_info
           end
         end
       end
-      @files_to_remove.push(*files_on_db.values)
+      @files_to_remove = files_on_db.values.select{ |file|
+        not ids_updated.include?(file.id)
+      }
       @processed = true
     end
   end
@@ -146,7 +157,7 @@ module TasksHelper
       begin
         disk_info = YAML::load_file filename
       rescue Psych::SyntaxError
-      return self.read_from_old_file(filename)
+        return self.read_from_old_file(filename)
       end
 
       disk = HardDiskInfo.new

@@ -23,7 +23,10 @@ class FileDisk < ActiveRecord::Base
   def self.find_using_filename_with_id(filename)
     filename_id_match = RE_FILENAME_ID.match(filename)
     if filename_id_match
-      return self.find(filename_id_match[:id].to_i(16))
+      begin
+        return self.find(filename_id_match[:id].to_i(16))
+      rescue ActiveRecord::RecordNotFound
+      end
     end
     return nil
   end
@@ -71,11 +74,14 @@ class FileDisk < ActiveRecord::Base
   end
 
   def copy_extra_data(other)
-    self.id = other.id
-    self.score = other.score
+    if other
+      self.id = other.id
+      self.score = other.score
+    end
   end
 
   def ==(other)
+    not other.nil? and
     other.id == self.id and
     other.filename == self.filename and
     other.size_mb == self.size_mb and

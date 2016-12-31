@@ -13,3 +13,11 @@ To configure usbmount, edit file `/etc/usbmount/usbmount.conf` and set the follo
     FS_MOUNTOPTIONS="-fstype=vfat,gid=plugdev,dmask=0002,fmask=0113,utf8"
 
 Ensure to remove `sync` from usbmount option.
+
+Generating tests
+----------------
+See [http://www.webascender.com/Blog/ID/566/Testing-Rails-4-Apps-With-RSpec-3-Part-I#.WGePRrYrK9s].
+
+To generate rspecs: bin/rails generate rspec:model Disks
+
+To execute tests: bin/rspec

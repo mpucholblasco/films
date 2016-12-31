@@ -1,9 +1,0 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  filename: MyString
-  percentage: 1.5
-
-two:
-  filename: MyString
-  percentage: 1.5

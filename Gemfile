@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'rake', '< 11.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.0'
@@ -29,7 +30,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # i18n-js
 # You only need this RC version constraint during the development of `3.0.0`, once stable version is released you can remove `rc8` suffix
 # `3.0.0.rc8` is the latest version of released RC version when this entry is changed, you might want to change it later
-gem "i18n-js", ">= 3.0.0.rc8" 
+gem "i18n-js", ">= 3.0.0.rc8"
 
 # Queue gem system
 gem 'delayed_job_active_record'
@@ -46,7 +47,7 @@ gem 'sys-filesystem'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
-group :development, :test do
+group :development do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
 
@@ -57,3 +58,11 @@ group :development, :test do
   gem 'spring'
 end
 
+group :development, :test do
+  gem 'rspec-rails', '~> 3.5'
+  gem 'capybara', '~> 2.5'
+end
+
+group :test do
+  gem 'faker', '~> 1.6.1'
+end

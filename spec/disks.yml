@@ -1,0 +1,9 @@
+one:
+  id: 1
+  name: MyDisk1
+  disk_type: 1
+
+two:
+  id: 2
+  name: MyDisk2
+  disk_type: 1

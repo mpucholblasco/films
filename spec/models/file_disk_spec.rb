@@ -83,4 +83,17 @@ RSpec.describe FileDisk, :type => :model do
     expect(file_disk.disk_id).to eq(1)
     expect(file_disk.deleted).to eq(false)
   end
+
+  # non-utf-8 encoding
+  it "find_using_filename_with_id should work with non-utf-8 characters" do
+    file_disk = FileDisk.find_using_filename_with_id(non_utf8_filename)
+    expect(file_disk).to be_nil
+  end
+
+  private
+
+  def non_utf8_filename
+    non_utf8_filename_hex = '496e636f6d696e672f547261732e6c612e6de17363617261202832303135292e5b48445269702e587669442d4143332e352e315d32332c39382e617669'
+    non_utf8_filename_hex.scan(/../).map { |x| x.hex.chr }.join
+  end
 end

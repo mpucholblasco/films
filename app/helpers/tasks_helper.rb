@@ -6,7 +6,7 @@ module TasksHelper
   class HardDiskFilesInfo
     PATHS_TO_PROCESS = [ "Peliculas", "Series", "procesar", "Incoming" ]
 
-    def initialize(mount, disk_id)
+    def initialize(mount, disk_id = nil)
       @mount = File.realpath(mount)
       @disk_id = disk_id
       @processed = false
@@ -31,21 +31,23 @@ module TasksHelper
     end
 
     def process
-      process_info if not @processed
       disk = nil
       errors = ''
       begin
         disk = TasksHelper::HardDiskInfo.read_from_mounted_disk(@mount)
         disk.ensure_exists
+        @disk_id = disk.id if @disk_id.nil?
       rescue ActiveRecord::RecordNotFound
         raise Exception.new(t(:update_error_disk_not_in_db))
       rescue IOError
         raise Exception.new(t(:update_error_disk_information_not_found))
       end
 
-      if !@disk_id.nil? and disk.id != @disk_id
+      if disk.id != @disk_id
         raise Exception.new(t(:update_error_inserted_disk_is_not_updating_one, :inserted_disk => disk.id, :updating_disk => @disk_id))
       end
+
+      process_info if not @processed
 
       # Mark deleted files as deleted
       FileDisk.transaction do
@@ -116,8 +118,8 @@ module TasksHelper
         files.each do |file|
           internal_filename = file[(@mount.length+1)..-1]
           file_on_disk_db = files_on_db[internal_filename]
-          file_on_db = FileDisk.find_using_filename_with_id(internal_filename)
           file_info = FileDisk.create_from_filename(file, internal_filename, @disk_id)
+          file_on_db = FileDisk.find_using_filename_with_id(internal_filename)
 
           if file_on_db
             file_info.copy_extra_data(file_on_db)

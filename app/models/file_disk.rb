@@ -7,6 +7,10 @@ class FileDisk < ActiveRecord::Base
   belongs_to :disk
   belongs_to :hash_file, class_name: 'HashFile', foreign_key: 'hash_id'
   attr_accessor :original_name
+  before_save :fix_filename
+  def fix_filename
+    self.filename = self.filename.encode('UTF-8', :invalid => :replace, :undef => :replace)
+  end
 
   @original_name = nil
 
@@ -21,6 +25,7 @@ class FileDisk < ActiveRecord::Base
   end
 
   def self.find_using_filename_with_id(filename)
+    filename = filename.encode('UTF-8', :invalid => :replace, :undef => :replace)
     filename_id_match = RE_FILENAME_ID.match(filename)
     if filename_id_match
       begin
@@ -57,6 +62,7 @@ class FileDisk < ActiveRecord::Base
 
   def append_id_to_filename
     if not self.id.nil? and not self.filename.nil? and not self.filename.empty?
+      self.filename = self.filename.encode('UTF-8', :invalid => :replace, :undef => :replace)
       id_in_filename = " [#{self.id.to_s(16)}]"
       filename_id = RE_FILENAME_ID.match(self.filename)
       if filename_id
@@ -69,7 +75,7 @@ class FileDisk < ActiveRecord::Base
           new_filename = "#{self.filename}#{id_in_filename}"
         end
       end
-      self.filename = new_filename.encode('UTF-8', :invalid => :replace, :undef => :replace)
+      self.filename = new_filename
     end
   end
 

@@ -81,8 +81,8 @@ module TasksHelper
             file.save
             File.rename("#{@mount}/#{file.original_name}", "#{@mount}/#{file.filename}") if file.original_name != file.filename
           end
-        rescue IOException
-          errors << I18n.t(:update_error_couldnt_rename_file, :original_name => file.original_name, :target_name => file.filename) << '\n'
+        rescue IOError => ex
+          errors << I18n.t(:update_error_couldnt_rename_file, :original_name => file.original_name, :target_name => file.filename) << '(' << ex.message << ')' << '\n'
         rescue ActiveRecord::RecordNotUnique
           errors << I18n.t(:update_error_duplicated_file, :duplicated_filename => file.filename) << '\n'
         end

@@ -38,53 +38,53 @@ module TasksHelper
         disk.ensure_exists
         @disk_id = disk.id if @disk_id.nil?
       rescue ActiveRecord::RecordNotFound
-        raise Exception.new(t(:update_error_disk_not_in_db))
+        raise Exception.new(I18n.t(:update_error_disk_not_in_db))
       rescue IOError
-        raise Exception.new(t(:update_error_disk_information_not_found))
+        raise Exception.new(I18n.t(:update_error_disk_information_not_found))
       end
 
       if disk.id != @disk_id
-        raise Exception.new(t(:update_error_inserted_disk_is_not_updating_one, :inserted_disk => disk.id, :updating_disk => @disk_id))
+        raise Exception.new(I18n.t(:update_error_inserted_disk_is_not_updating_one, :inserted_disk => disk.id, :updating_disk => @disk_id))
       end
 
       process_info if not @processed
 
       # Mark deleted files as deleted
       FileDisk.transaction do
-        logger.info "Going to delete <#{@files_to_remove.length}>"
+        Rails.logger.info "Going to delete <#{@files_to_remove.length}>"
         @files_to_remove.each do |file|
           file.deleted = true
-          file.update
+          file.save
         end
       end
 
-      logger.info "Going to add <#{@files_to_add.length}>"
+      Rails.logger.info "Going to add <#{@files_to_add.length}>"
       @files_to_add.each do |file|
         begin
           FileDisk.transaction do
             file.save
             file.append_id_to_filename
-            file.update
+            file.save
             File.rename("#{@mount}/#{file.original_name}", "#{@mount}/#{file.filename}")
           end
-        rescue IOException
-          errors << t(:update_error_couldnt_rename_file, :original_name => file.original_name, :target_name => file.filename) << '\n'
+        rescue IOError => ex
+          errors << I18n.t(:update_error_couldnt_rename_file, :original_name => file.original_name, :target_name => file.filename) << '(' << ex.message << ')' << '\n'
         rescue ActiveRecord::RecordNotUnique
-          errors << t(:update_error_duplicated_file, :duplicated_filename => file.filename) << '\n'
+          errors << I18n.t(:update_error_duplicated_file, :duplicated_filename => file.filename) << '\n'
         end
       end
 
-      logger.info "Going to update <#{@files_to_update.length}>"
+      Rails.logger.info "Going to update <#{@files_to_update.length}>"
       @files_to_update.each do |file|
         begin
           FileDisk.transaction do
-            file.update
+            file.save
             File.rename("#{@mount}/#{file.original_name}", "#{@mount}/#{file.filename}") if file.original_name != file.filename
           end
         rescue IOException
-          errors << t(:update_error_couldnt_rename_file, :original_name => file.original_name, :target_name => file.filename) << '\n'
+          errors << I18n.t(:update_error_couldnt_rename_file, :original_name => file.original_name, :target_name => file.filename) << '\n'
         rescue ActiveRecord::RecordNotUnique
-          errors << t(:update_error_duplicated_file, :duplicated_filename => file.filename) << '\n'
+          errors << I18n.t(:update_error_duplicated_file, :duplicated_filename => file.filename) << '\n'
         end
       end
 

@@ -5,6 +5,7 @@ include Sys
 module TasksHelper
   class HardDiskFilesInfo
     PATHS_TO_PROCESS = [ "Peliculas", "Series", "procesar", "Incoming" ]
+    attr_accessor :files_to_add, :files_to_remove, :files_to_update
 
     def initialize(mount, disk_id = nil)
       @mount = File.realpath(mount)
@@ -78,6 +79,7 @@ module TasksHelper
       @files_to_update.each do |file|
         begin
           FileDisk.transaction do
+            file.deleted = false
             file.save
             File.rename("#{@mount}/#{file.original_name}", "#{@mount}/#{file.filename}") if file.original_name != file.filename
           end
@@ -122,19 +124,19 @@ module TasksHelper
           file_on_db = FileDisk.find_using_filename_with_id(internal_filename)
 
           if file_on_db
-            file_info.copy_extra_data(file_on_db)
+            file_on_db.copy_from_created_from_filename(file_info)
             files_on_db.delete(internal_filename)
             if file_info != file_on_disk_db
-              file_info.append_id_to_filename
-              @files_to_update << file_info
-              ids_updated.add(file_info.id)
+              file_on_db.append_id_to_filename
+              @files_to_update << file_on_db
+              ids_updated.add(file_on_db.id)
             end
           elsif file_on_disk_db
-            file_info.copy_extra_data(file_on_disk_db)
-            file_info.append_id_to_filename
+            file_on_disk_db.copy_from_created_from_filename(file_info)
+            file_on_disk_db.append_id_to_filename
             files_on_db.delete(internal_filename)
-            @files_to_update << file_info
-            ids_updated.add(file_info.id)
+            @files_to_update << file_on_disk_db
+            ids_updated.add(file_on_disk_db.id)
           else # not present neither on DB nor disk_DB -> it's new
             @files_to_add << file_info
           end
@@ -210,7 +212,7 @@ module TasksHelper
 
     def ensure_exists
       other_disk = Disk.find(id)
-      raise "Disk <#{name}> does not match with existing one" if name != other_disk.name or disk_type != other_disk.disk_type
+      raise Exception.new(I18n.t(:update_error_disk_not_in_db)) if name != other_disk.name or disk_type != other_disk.disk_type
       self.created_at = other_disk.created_at
       self.updated_at = other_disk.updated_at
     end

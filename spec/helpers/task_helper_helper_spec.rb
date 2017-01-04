@@ -282,6 +282,8 @@ RSpec.describe TasksHelper, type: :helper do
     expect(file_on_db.filename).to eq(newfilename)
   end
 
+  # TODO : when files are present and have the same filename, they are considered to be updated, find out why
+
   private
 
   def file_info(filename, disk_id = 1, id = nil)

@@ -70,6 +70,7 @@ class DisksController < ApplicationController
         }
       end
     rescue Exception => ex
+      logger.error(ex)
       respond_to do |format|
         format.json {
           render json: { message: ex.message }, status: 500

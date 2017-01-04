@@ -88,6 +88,7 @@ class FileDisk < ActiveRecord::Base
 
   def copy_from_created_from_filename(other)
     if other
+      self.original_name = other.original_name
       self.filename = other.filename
       self.size_mb = other.size_mb
       self.disk_id = other.disk_id

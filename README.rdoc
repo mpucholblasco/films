@@ -4,6 +4,32 @@ Have your films organized.
 
 This app will help you to keep all your films organized.
 
+System configuration
+--------------------
+* crontab -e
+
+```
+*/5 * * * * cd /usr/share/films && /usr/bin/rake RAILS_ENV=production films:update_disk[/home/marcel/.aMule/Incoming] > /dev/null 2>&1
+```
+
+* logrotate
+
+Generate file `/etc/logrotate.d/films` with content:
+```
+/usr/share/films/log/*.log {
+  daily
+  missingok
+  rotate 7
+  compress
+  delaycompress
+  notifempty
+  copytruncate
+}
+```
+
+Avoid fsck interactivity on boot
+Edit file /etc/default/rcS and set FSCKFIX=yes
+
 Copying files to external
 -------------------------
 To copy files to an external USB, you need to have installed usbmount via:

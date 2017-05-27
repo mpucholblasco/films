@@ -66,7 +66,7 @@ module TasksHelper
             file.save
             file.append_id_to_filename
             file.save
-            File.rename("#{@mount}/#{file.original_name}", "#{@mount}/#{file.filename}")
+            File.rename("#{@mount}/#{file.original_name}", "#{@mount}/#{file.filename}") if file.original_name != file.filename
           end
         rescue IOError => ex
           errors << I18n.t(:update_error_couldnt_rename_file, :original_name => file.original_name, :target_name => file.filename) << '(' << ex.message << ')' << '\n'
@@ -95,6 +95,9 @@ module TasksHelper
       disk_db.total_size = disk.total_size
       disk_db.free_size = disk.free_size
       disk_db.save()
+
+      # Found problems with external drives and file renaming, trying with a sync
+      system("sync")
 
       if not errors.empty?
         raise Exception.new(errors)

@@ -8,7 +8,7 @@ RSpec.describe TasksHelper, type: :helper do
   end
 
   # process_info
-  it "process_info should add a new file if DB is empty" do
+  it "process_info should add a new file if DB is empty and file does not contain ID" do
     mount = 'mount'
     file_without_mount = 'Peliculas/file_to_add'
     file_with_mount = "#{mount}/#{file_without_mount}"
@@ -33,6 +33,33 @@ RSpec.describe TasksHelper, type: :helper do
     expect(hard_disk_files_info.get_files_to_remove.length).to eq(0)
     expect(hard_disk_files_info.get_files_to_update.length).to eq(0)
   end
+
+  it "process_info should add a new file if DB is empty and file contains ID" do
+    mount = 'mount'
+    file_without_mount = 'Peliculas/file_to_add [1]'
+    file_with_mount = "#{mount}/#{file_without_mount}"
+    file_to_add = file_info(file_without_mount, 1, 1)
+
+    # mocking
+    allow(File).to receive(:realpath).and_call_original
+    allow(File).to receive(:realpath).with(mount).and_return(mount)
+    allow(Dir).to receive(:glob).and_return([])
+    allow(Dir).to receive(:glob).with("#{mount}/Peliculas/**/*").and_return([ file_with_mount ])
+    allow(File).to receive(:file?).and_call_original
+    allow(File).to receive(:file?).with(file_with_mount).and_return(true)
+    allow(FileDisk).to receive(:find_using_filename_with_id).and_return(nil)
+    allow(FileDisk).to receive(:create_from_filename).with(file_with_mount, file_without_mount, 1).and_return(file_to_add)
+
+    # testing
+    hard_disk_files_info = TasksHelper::HardDiskFilesInfo.new(mount, 1)
+    allow(hard_disk_files_info).to receive(:get_files_on_db).and_return({})
+    hard_disk_files_info.send(:process_info)
+    expect(hard_disk_files_info.get_files_to_add.length).to eq(1)
+    expect(hard_disk_files_info.get_files_to_add[0]).to eq(file_to_add)
+    expect(hard_disk_files_info.get_files_to_remove.length).to eq(0)
+    expect(hard_disk_files_info.get_files_to_update.length).to eq(0)
+  end
+
 
   it "process_info should update an existing file because it's on DB and disk is different" do
     mount = 'mount'
@@ -219,9 +246,34 @@ RSpec.describe TasksHelper, type: :helper do
     expect(file_to_add.id).not_to be_nil
     file_on_db = FileDisk.find(file_to_add.id)
     expect(file_on_db).not_to be_nil
-    expect(file_on_db.filename).not_to eq(filename) # because contains id
+    expect(file_on_db.filename).not_to eq(filename) # because new filename contains id
   end
 
+  it "process with changes to add on DB but not on disk works correctly" do
+    mount = 'mount'
+    filename = 'myfilename [3039]'
+    file_to_add = file_info(filename, 1, 12345)
+
+    # mocking
+    allow(File).to receive(:realpath).and_call_original
+    allow(File).to receive(:realpath).with(mount).and_return(mount)
+    disk = disk_info(2)
+    allow(TasksHelper::HardDiskInfo).to receive(:read_from_mounted_disk).with(mount).and_return(disk)
+    allow(disk).to receive(:ensure_exists).and_return(true)
+
+    # testing
+    hard_disk_files_info = TasksHelper::HardDiskFilesInfo.new(mount, disk.id)
+    allow(hard_disk_files_info).to receive(:process_info).and_return(true)
+    hard_disk_files_info.files_to_add = [ file_to_add ]
+
+    expect {
+      hard_disk_files_info.process
+    }.to change { FileDisk.count }.by(1)
+    expect(file_to_add.id).not_to be_nil
+    file_on_db = FileDisk.find(file_to_add.id)
+    expect(file_on_db).not_to be_nil
+    expect(file_on_db.filename).to eq(filename) # because contains id
+  end
   it "process with changes to remove works correctly" do
     mount = 'mount'
     filename = 'myfilename'

@@ -36,9 +36,9 @@ RSpec.describe TasksHelper, type: :helper do
 
   it "process_info should add a new file if DB is empty and file contains ID" do
     mount = 'mount'
-    file_without_mount = 'Peliculas/file_to_add [1]'
+    file_without_mount = 'Peliculas/file_to_add [5]'
     file_with_mount = "#{mount}/#{file_without_mount}"
-    file_to_add = file_info(file_without_mount, 1, 1)
+    file_to_add = file_info(file_without_mount, 1)
 
     # mocking
     allow(File).to receive(:realpath).and_call_original

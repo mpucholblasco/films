@@ -84,6 +84,17 @@ RSpec.describe FileDisk, :type => :model do
     expect(file_disk.deleted).to eq(false)
   end
 
+  it "create_from_filename gets correct information with id on filename" do
+    allow(File).to receive(:size).with('filename [ab]').and_return(12345678)
+    file_disk = FileDisk.create_from_filename('filename [ab]', 'internal_filename', 1)
+    expect(file_disk.id).to eq(171)
+    expect(file_disk.original_name).to eq('internal_filename')
+    expect(file_disk.filename).to eq('internal_filename')
+    expect(file_disk.size_mb).to eq(11)
+    expect(file_disk.disk_id).to eq(1)
+    expect(file_disk.deleted).to eq(false)
+  end
+
   # non-utf-8 encoding
   it "find_using_filename_with_id should work with non-utf-8 characters" do
     file_disk = FileDisk.find_using_filename_with_id(non_utf8_filename)

@@ -54,7 +54,7 @@ module TasksHelper
       FileDisk.transaction do
         Rails.logger.info "Going to delete <#{@files_to_remove.length}>"
         @files_to_remove.each do |file|
-          Rails.logger.debug "Deleting file #{file}"
+          Rails.logger.debug "Deleting file #{file.inspect}"
           file.deleted = true
           file.save
         end
@@ -64,7 +64,7 @@ module TasksHelper
       @files_to_add.each do |file|
         begin
           FileDisk.transaction do
-            Rails.logger.debug "Adding file #{file}"
+            Rails.logger.debug "Adding file #{file.inspect}"
             file.save
             file.append_id_to_filename
             file.save
@@ -72,10 +72,10 @@ module TasksHelper
           end
         rescue IOError => ex
           errors << I18n.t(:update_error_couldnt_rename_file, :original_name => file.original_name, :target_name => file.filename) << '(' << ex.message << ')' << '\n'
-          Rails.logger.debug "Error adding file #{file}. Reason: #{ex}"
+          Rails.logger.debug "Error adding file #{file.inspect}. Reason: #{ex}"
         rescue ActiveRecord::RecordNotUnique => ex
           errors << I18n.t(:update_error_duplicated_file, :duplicated_filename => file.filename) << '\n'
-          Rails.logger.debug "Error adding file #{file}. Reason: #{ex}"
+          Rails.logger.debug "Error adding file #{file.inspect}. Reason: #{ex}"
         end
       end
 
@@ -83,17 +83,17 @@ module TasksHelper
       @files_to_update.each do |file|
         begin
           FileDisk.transaction do
-            Rails.logger.debug "Updating file #{file}"
+            Rails.logger.debug "Updating file #{file.inspect}"
             file.deleted = false
             file.save
             File.rename("#{@mount}/#{file.original_name}", "#{@mount}/#{file.filename}") if file.original_name != file.filename
           end
         rescue IOError => ex
           errors << I18n.t(:update_error_couldnt_rename_file, :original_name => file.original_name, :target_name => file.filename) << '(' << ex.message << ')' << '\n'
-          Rails.logger.debug "Error updating file #{file}. Reason: #{ex}"
+          Rails.logger.debug "Error updating file #{file.inspect}. Reason: #{ex}"
         rescue ActiveRecord::RecordNotUnique => ex
           errors << I18n.t(:update_error_duplicated_file, :duplicated_filename => file.filename) << '\n'
-          Rails.logger.debug "Error updating file #{file}. Reason: #{ex}"
+          Rails.logger.debug "Error updating file #{file.inspect}. Reason: #{ex}"
         end
       end
 

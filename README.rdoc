@@ -36,7 +36,8 @@ To copy files to an external USB, you need to have installed usbmount via:
     sudo apt-get install usbmount
 
 To configure usbmount, edit file `/etc/usbmount/usbmount.conf` and set the following variable value:
-    FS_MOUNTOPTIONS="-fstype=vfat,gid=plugdev,dmask=0002,fmask=0113,utf8"
+    MOUNTOPTIONS="async,noexec,nodev,noatime,nodiratime,user,umask=0000"
+    FS_MOUNTOPTIONS="-fstype=vfat,gid=www-data,dmask=0002,fmask=0113,utf8"
 
 Ensure to remove `sync` from usbmount option.
 

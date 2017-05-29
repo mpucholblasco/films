@@ -21,15 +21,24 @@ class FileDisk < ActiveRecord::Base
     file_disk.size_mb = File.size(filename) / 1024 / 1024
     file_disk.disk_id = disk_id
     file_disk.deleted = false
+    file_disk.id = self.get_id_from_filename(filename)
     return file_disk
   end
 
-  def self.find_using_filename_with_id(filename)
+  def self.get_id_from_filename(filename)
     filename = filename.encode('UTF-8', :invalid => :replace, :undef => :replace)
     filename_id_match = RE_FILENAME_ID.match(filename)
     if filename_id_match
+      return filename_id_match[:id].to_i(16)
+    end
+    return nil
+  end
+
+  def self.find_using_filename_with_id(filename)
+    id = self.get_id_from_filename(filename)
+    if id
       begin
-        return self.find(filename_id_match[:id].to_i(16))
+        return self.find(id)
       rescue ActiveRecord::RecordNotFound
       end
     end

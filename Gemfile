@@ -34,6 +34,7 @@ gem "i18n-js", ">= 3.0.0.rc8"
 
 # Queue gem system
 gem 'delayed_job_active_record'
+gem 'daemons'
 
 # Filesystem information
 gem 'sys-filesystem'

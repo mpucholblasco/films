@@ -3,7 +3,7 @@ $(document).on("ajax:beforeSend", "form[data-turboform]", function(e) {
     return false;
 });
 
-$(document).on('page:load', function(e) {
+$(document).on('ready page:load', function(e) {
 	var AutofocusInput = $('input[autofocus="autofocus"]');
 	var value = AutofocusInput.val();
 	AutofocusInput.focus();
@@ -12,4 +12,3 @@ $(document).on('page:load', function(e) {
 		AutofocusInput[0].setSelectionRange(strLength, strLength);
 	}
 });
-

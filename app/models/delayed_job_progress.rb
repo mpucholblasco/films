@@ -11,7 +11,7 @@ class DelayedJobProgress < ActiveRecord::Base
     self.progress = progress
     self.save()
   end
-  
+
   def finish_process
     self.progress = self.progress_max
     self.save()

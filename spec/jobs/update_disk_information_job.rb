@@ -2,8 +2,8 @@ require 'rails_helper'
 
 RSpec.describe TasksHelper, type: :helper do
   it "creation works as expected and obtains real path" do
-    allow(File).to receive(:realpath).with('mount_path').and_return('mount_path')
-    hard_disk_files_info = TasksHelper::HardDiskFilesInfo.new('mount_path', 1)
+    allow(File).to receive(:realpath).with('mount_path').and_return('/unexistentmount_path')
+    hard_disk_files_info = HardDiskFilesInfo.new('mount_path', 1)
     expect(hard_disk_files_info).not_to be_nil
   end
 

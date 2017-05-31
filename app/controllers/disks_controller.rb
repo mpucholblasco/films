@@ -4,7 +4,6 @@ class DisksController < ApplicationController
   # We need to include this helper to use it in view
   helper ToolsHelper
 
-  DISK_MOUNT_PATH = '/media/usb/'
   def index
     @disks = Disk.paginate(:page => params[:page], per_page: 50).order(:name)
   end
@@ -54,28 +53,33 @@ class DisksController < ApplicationController
     @disk = Disk.find(params[:id])
   end
 
+  def update_content_info
+    logger.debug("Obtaining update content information for job id #{params[:jobid]}")
+    progress = 100
+    progress_stage = I18n.t(:update_content_finish)
+    finished = true
+    begin
+      job_progress = DelayedJobProgress.find(params[:jobid])
+      progress = job_progress.progress
+      progress_stage = job_progress.progress_stage
+      finished = job_progress.finished
+    rescue ActiveRecord::RecordNotFound
+    end
+    respond_to do |format|
+      format.json {
+        render json: { progress: progress, progress_stage: progress_stage, finished: false }, status: 200
+      }
+    end
+  end
+
   def updating_content
     @disk = Disk.find(params[:id])
-    logger.info "Updating content for disk #{@disk.inspect}"
-
-    logger.info "Updating disk mounted on <#{DISK_MOUNT_PATH}>"
-    begin
-      hard_disk_files_info = TasksHelper::HardDiskFilesInfo.new(DISK_MOUNT_PATH, @disk.id)
-      hard_disk_files_info.process
-      respond_to do |format|
-        format.json {
-          render json: { deleted: hard_disk_files_info.get_files_to_remove.length,
-          added: hard_disk_files_info.get_files_to_add.length,
-          updated: hard_disk_files_info.get_files_to_update.length }
-        }
-      end
-    rescue Exception => ex
-      logger.error(ex)
-      respond_to do |format|
-        format.json {
-          render json: { message: ex.message }, status: 500
-        }
-      end
+    job = UpdateDiskInformationJob.perform_later @disk.id
+    logger.debug "Updating disk #{@disk.inspect}. Job info: #{job.inspect}"
+    respond_to do |format|
+      format.json {
+        render json: { job_url: update_content_info_path(@disk, job.job_id) }, status: 200
+      }
     end
   end
 

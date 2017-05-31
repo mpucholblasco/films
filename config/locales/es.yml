@@ -4,8 +4,9 @@ es:
   disk: "Disco"
   new_disk: "Nuevo disco"
   disk_prohibited_error: "No se puede guardar este disco"
+  update_content_obtaining_disk_info: "Obteniendo información del disco"
   update_content_message: "Inserta el disco '%{disk_name}' en el servidor y haz click en el botón 'Empezar'."
-  update_content_finish: "Proceso finalizado correctamente. Eliminados: %{deleted}, agregados: %{added}"
+  update_content_finish: "Proceso finalizado correctamente."
   update_content_error: "Error: %{message}"
 
   # Update error messages
@@ -43,6 +44,7 @@ es:
   total_size: "Tamaño total"
   free_size: "Espacio libre"
   last_update_not_set: "no actualizado"
+  starting_progress: "Inicializando proceso"
 
   # Actions
   show: "Mostrar"

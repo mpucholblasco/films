@@ -21,12 +21,20 @@ var pollProgressStatus = function(pollUrl) {
   $(function() {
     $.getJSON(pollUrl, function(response) {
       console.log('poll progress: ' + JSON.stringify(response));
-      if (response.progress != 100) {
+      if (response.finish_status == "UNFINISHED") {
         setTimeout(function () { pollProgressStatus(pollUrl); }, 1000);
+        $('#progressbar').attr('value', response.progress);
+        $('#progressnumber').html(response.progress);
+        $('#progresstext').html(response.progress_stage);
+      }else {
+        $('#progressbar').attr('value', 100);
+        $('#progressnumber').html('100');
+        if (response.finish_status == "FINISHED_WITH_ERRORS") {
+          $('#progresstext').html("Error: " + response.error_message);
+        }else {
+          $('#progresstext').html(response.progress_stage);
+        }
       }
-      $('#progressbar').attr('value', response.progress);
-      $('#progressnumber').html(response.progress);
-      $('#progresstext').html(response.progress_stage);
     });
   });
 }

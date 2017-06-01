@@ -4,11 +4,16 @@ es:
   disk: "Disco"
   new_disk: "Nuevo disco"
   disk_prohibited_error: "No se puede guardar este disco"
+  update_content_obtaining_disk_info: "Obteniendo información del disco"
+  update_content_deleting_files: "Eliminando %{files_number} ficheros"
+  update_content_adding_files: "Añadiendo %{files_number} ficheros"
+  update_content_updating_files: "Actualizando %{files_number} ficheros"
   update_content_message: "Inserta el disco '%{disk_name}' en el servidor y haz click en el botón 'Empezar'."
-  update_content_finish: "Proceso finalizado correctamente. Eliminados: %{deleted}, agregados: %{added}"
+  update_content_finish: "Proceso finalizado correctamente."
   update_content_error: "Error: %{message}"
 
   # Update error messages
+  update_error_disk_not_inserted: "Disco no encontrado"
   update_error_disk_information_not_found: "Información del disco no encontrada"
   update_error_disk_not_in_db: "Información de disco presente, pero no encontrada en la BD"
   update_error_duplicated_file: "Fichero duplicado '%{duplicated_filename}'"
@@ -43,6 +48,9 @@ es:
   total_size: "Tamaño total"
   free_size: "Espacio libre"
   last_update_not_set: "no actualizado"
+  starting_progress: "Inicializando proceso"
+  progress: "Progreso"
+  stage: "Fase"
 
   # Actions
   show: "Mostrar"

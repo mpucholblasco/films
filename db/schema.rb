@@ -11,14 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161228111227) do
+ActiveRecord::Schema.define(version: 20170531161907) do
 
   create_table "delayed_job_progresses", primary_key: "job_id", force: :cascade do |t|
-    t.integer  "progress_max",   limit: 4,   null: false
-    t.integer  "progress",       limit: 4,   null: false
+    t.integer  "progress_max",   limit: 4,     null: false
+    t.integer  "progress",       limit: 4,     null: false
     t.string   "progress_stage", limit: 255
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+    t.integer  "finish_status",  limit: 4
+    t.text     "error_message",  limit: 65535
   end
 
   create_table "delayed_jobs", force: :cascade do |t|

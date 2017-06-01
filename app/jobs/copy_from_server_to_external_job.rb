@@ -1,5 +1,5 @@
 class CopyFromServerToExternalJob < ActiveJob::Base
-  queue_as :default
+  queue_as :copy_from_server_to_external
 
   before_enqueue do |job|
     logger.debug "Initializing delayed job progress with job: #{job.inspect}"
@@ -8,7 +8,7 @@ class CopyFromServerToExternalJob < ActiveJob::Base
     job_progress.progress_max = 100
     job_progress.save()
   end
-  
+
   after_perform do |job|
     DelayedJobProgress.find(job_id).finish_process
   end

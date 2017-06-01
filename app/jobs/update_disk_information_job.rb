@@ -15,13 +15,16 @@ class UpdateDiskInformationJob < ActiveJob::Base
 
   after_perform do |job|
     logger.info "Job #{job_id} finished correctly"
-    DelayedJobProgress.find(job_id).finish_correctly
+    job_progress = DelayedJobProgress.find(job_id)
+    job_progress.upgrade_progress(100, I18n.t(:update_content_finish))
+    job_progress.finish_correctly
   end
 
   rescue_from(StandardError) do |exception|
-    logger.info "Rescue from: #{exception.inspect}"
     logger.info "Job #{job_id} raised exception: #{exception.inspect}"
-    DelayedJobProgress.find(job_id).finish_with_errors(exception.message)
+    job_progress = DelayedJobProgress.find(job_id)
+    job_progress.upgrade_progress(100, "Error")
+    job_progress.finish_with_errors(exception.message)
   end
 
   def perform(*args)

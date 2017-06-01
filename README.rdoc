@@ -30,6 +30,25 @@ Generate file `/etc/logrotate.d/films` with content:
 Avoid fsck interactivity on boot
 Edit file /etc/default/rcS and set FSCKFIX=yes
 
+Service for delayed jobs:
+1. Edit file /etc/systemd/system/films_delayed_job.service and set this
+   content:
+
+```
+[Unit]
+Description=Films delayed jobs
+Requires=mysql.service
+After=mysql.service
+
+[Service]
+Environment=RAILS_ENV=production
+Type=forking
+ExecStart=/usr/share/films/bin/delayed_job start
+ExecStop=/usr/share/films/bin/delayed_job stop
+Restart=on-failure
+PIDFile=/usr/share/films/tmp/pids/delayed_job.pid
+```
+
 Copying files to external
 -------------------------
 To copy files to an external USB, you need to have installed usbmount via:

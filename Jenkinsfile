@@ -66,7 +66,7 @@ pipeline {
 
   post {
     failure {
-      mail to: 'mpucholblasco@gmail.com', subject: 'The Pipeline failed', body: 'Job failed'
+      mail to: emailextrecipients([[$class: 'DevelopersRecipientProvider'],[$class: 'CulpritsRecipientProvider']]), subject: "${env.JOB_NAME} ${env.BRANCH_NAME} - Build #${env.BUILD_NUMBER} - FAILED!", body: "Check console output at ${env.BUILD_URL} to view the results."
     }
   }
 }

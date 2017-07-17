@@ -12,10 +12,10 @@ pipeline {
           docker.image('mysql:5.6').withRun("-e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}") { mysql_container ->
             stage("Wait until DB will be accessible") {
               try {
-                timeout(time: 120, unit: 'SECONDS') {
+                timeout(time: 5, unit: 'SECONDS') {
                   waitUntil {
                     try {
-                      sh "docker exec ${mysql_container.id} mysql --user=root --password='${MYSQL_ROOT_PASSWORD}' -e 'SELECT 1'"
+                      sh "docer exec ${mysql_container.id} mysql --user=root --password='${MYSQL_ROOT_PASSWORD}' -e 'SELECT 1'"
                       return true
                     } catch (exception) {
                       return false

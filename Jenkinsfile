@@ -1,6 +1,7 @@
 #!/usr/bin/env groovy
 pipeline {
-  node {
+  agent any
+  stages {
     mysql_root_password="mypassword"
     stage("Start database") {
       docker.image('mysql:5.6').withRun("-e MYSQL_ROOT_PASSWORD=${mysql_root_password}") { mysql_container ->
@@ -53,6 +54,12 @@ pipeline {
           }
         }
       }
+    }
+  }
+
+  post {
+    failure {
+      mail to: mpucholblasco@gmail.com, subject: 'The Pipeline failed'
     }
   }
 }

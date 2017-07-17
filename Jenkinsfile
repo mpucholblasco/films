@@ -2,8 +2,8 @@
 pipeline {
   agent any
   stages {
-    mysql_root_password="mypassword"
     stage("Start database") {
+      mysql_root_password="mypassword"
       docker.image('mysql:5.6').withRun("-e MYSQL_ROOT_PASSWORD=${mysql_root_password}") { mysql_container ->
         stage("Wait until DB will be accessible") {
           try {
@@ -59,7 +59,7 @@ pipeline {
 
   post {
     failure {
-      mail to: 'mpucholblasco@gmail.com', subject: 'The Pipeline failed'
+      mail to: 'mpucholblasco@gmail.com', subject: 'The Pipeline failed', body: 'Job failed'
     }
   }
 }

@@ -58,7 +58,7 @@ pipeline {
                   // Publish spec results
                   junit 'spec/reports/*.xml'
 
-                  // Publish rcov results
+                  // Publish rcov results (requires HTML Publisher plugin)
                   publishHTML (target: [
                     allowMissing: false,
                     alwaysLinkToLastBuild: false,

@@ -70,10 +70,12 @@ pipeline {
 
   post {
     success {
-      try {
-        slackSend (color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
-      }catch(exception) {
-        echo "Ignoring Slack send notification"
+      script {
+        try {
+          slackSend (color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        }catch(exception) {
+          echo "Ignoring Slack send notification"
+        }
       }
     }
 

@@ -1,10 +1,11 @@
-#!/usr/bin/env groovy
+#!groovy
 pipeline {
+  agent any
+
   options {
     buildDiscarder(logRotator(numToKeepStr:'10'))
   }
 
-  agent any
   stages {
     stage("Start database") {
       environment {
@@ -52,7 +53,23 @@ pipeline {
 
                 stage("Executing tests") {
                   sh "bundle exec rake ci:setup:rspec spec"
-                  junit 'spec/reports/*.xml'
+
+                  post {
+                    success {
+                      // Publish spec results
+                      junit 'spec/reports/*.xml'
+
+                      // Publish rcov results
+                      publishHTML (target: [
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: true,
+                        reportDir: 'coverage',
+                        reportFiles: 'index.html',
+                        reportName: "RCov Report"
+                      ])
+                    }
+                  }
                 }
 
                 stage("Security scan") {

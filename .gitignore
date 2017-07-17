@@ -12,5 +12,6 @@
 !/log/.keep
 /tmp
 /old
-/asdf
 /vagrant/.vagrant
+spec/reports
+coverage

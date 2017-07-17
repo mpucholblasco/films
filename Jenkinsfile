@@ -1,5 +1,9 @@
 #!/usr/bin/env groovy
 pipeline {
+  options {
+    buildDiscarder(logRotator(numToKeepStr:'10'))
+  }
+
   agent any
   stages {
     stage("Start database") {
@@ -70,14 +74,19 @@ pipeline {
     }
 
     failure {
-      slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+      script {
+        try {
+          slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        }catch(exception) {
+        }
 
-      emailext (
-        subject: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-        body: """<p>FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
-        <p>Check console output at "<a href="${env.BUILD_URL}">${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>"</p>""",
-        recipientProviders: [[$class: 'DevelopersRecipientProvider']]
-      )
+        emailext (
+          subject: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+          body: """<p>FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+          <p>Check console output at "<a href="${env.BUILD_URL}">${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>"</p>""",
+          recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+        )
+      }
     }
   }
 }

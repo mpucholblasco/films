@@ -4,7 +4,7 @@ pipeline {
   stages {
     stage("Start database") {
       environment {
-        MYSQL_ROOT_PASSWORD = mypassword
+        MYSQL_ROOT_PASSWORD = 'mypassword'
       }
 
       steps {

@@ -84,8 +84,10 @@ pipeline {
 
   post {
     success {
-      slackSend color: '#00FF00',
-        message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+      try {
+        slackSend color: '#00FF00',
+          message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+      }catch(exc) {}
     }
 
     failure {
@@ -94,8 +96,10 @@ pipeline {
         <p>Check console output at "<a href="${env.BUILD_URL}">${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>"</p>""",
         recipientProviders: [[$class: 'DevelopersRecipientProvider']]
 
-      slackSend color: '#FF0000',
-        message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+      try {
+        slackSend color: '#FF0000',
+          message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+      }catch(exc) {}
     }
   }
 }

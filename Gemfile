@@ -68,5 +68,11 @@ group :test do
   gem 'faker', '~> 1.6.1'
   gem 'ci_reporter'
   gem 'ci_reporter_rspec'
-  gem "brakeman", :require => false
+
+  # Static analysis (vulnerabilities)
+  gem 'brakeman', :require => false
+
+  # Coverage
+  gem 'simplecov', :require => false
+  gem 'simplecov-rcov', :require => false
 end

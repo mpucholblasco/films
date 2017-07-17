@@ -54,22 +54,18 @@ pipeline {
                 stage("Executing tests") {
                   sh "bundle exec rake ci:setup:rspec spec"
 
-                  post {
-                    success {
-                      // Publish spec results
-                      junit 'spec/reports/*.xml'
+                  // Publish spec results
+                  junit 'spec/reports/*.xml'
 
-                      // Publish rcov results
-                      publishHTML (target: [
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: false,
-                        keepAll: true,
-                        reportDir: 'coverage',
-                        reportFiles: 'index.html',
-                        reportName: "RCov Report"
-                      ])
-                    }
-                  }
+                  // Publish rcov results
+                  publishHTML (target: [
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: true,
+                    reportDir: 'coverage',
+                    reportFiles: 'index.html',
+                    reportName: "RCov Report"
+                  ])
                 }
 
                 stage("Security scan") {

@@ -9,14 +9,13 @@ pipeline {
 
       steps {
         script {
-          mysql_root_password="mypassword"
-          docker.image('mysql:5.6').withRun("-e MYSQL_ROOT_PASSWORD=${mysql_root_password}") { mysql_container ->
+          docker.image('mysql:5.6').withRun("-e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}") { mysql_container ->
             stage("Wait until DB will be accessible") {
               try {
                 timeout(time: 120, unit: 'SECONDS') {
                   waitUntil {
                     try {
-                      sh "docker exec ${mysql_container.id} mysql --user=root --password='${mysql_root_password}' -e 'SELECT 1'"
+                      sh "docker exec ${mysql_container.id} mysql --user=root --password='${MYSQL_ROOT_PASSWORD}' -e 'SELECT 1'"
                       return true
                     } catch (exception) {
                       return false
@@ -42,7 +41,7 @@ pipeline {
                 sh "apt-get -qq update && apt-get -qq -y install nodejs"
               }
 
-              withEnv(["DATABASE_URL=mysql2://root:${mysql_root_password}@mysql/films_test", "RAILS_ENV=test"]) {
+              withEnv(["DATABASE_URL=mysql2://root:${MYSQL_ROOT_PASSWORD}@mysql/films_test", "RAILS_ENV=test"]) {
                 stage("Preparing DB") {
                   sh "bundle exec rake db:create"
                 }

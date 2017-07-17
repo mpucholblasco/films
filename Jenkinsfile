@@ -59,7 +59,7 @@ pipeline {
 
   post {
     failure {
-      mail to: mpucholblasco@gmail.com, subject: 'The Pipeline failed'
+      mail to: 'mpucholblasco@gmail.com', subject: 'The Pipeline failed'
     }
   }
 }

@@ -8,6 +8,19 @@ end
 
 class HardDiskInfo < Disk
   DEFAULT_FILE_NAME = 'info'
+
+  def self.from_mounted_disk(mount, disk_id, disk_name)
+    disk = HardDiskInfo.new
+    disk.id = disk_id
+    disk.name = disk_name
+
+    # Obtain disk space
+    stat_info = Filesystem.stat(mount)
+    disk.total_size = stat_info.block_size * stat_info.blocks
+    disk.free_size = stat_info.block_size * stat_info.blocks_free
+    return disk
+  end
+
   def self.read_from_mounted_disk(mount)
     return self.read_from_yaml(File.join(mount,DEFAULT_FILE_NAME))
   end
@@ -21,15 +34,7 @@ class HardDiskInfo < Disk
       return self.read_from_old_file(filename)
     end
 
-    disk = HardDiskInfo.new
-    disk.name = disk_info['name']
-    disk.id = disk_info['id']
-
-    # Obtain disk space
-    stat_info = Filesystem.stat(filename)
-    disk.total_size = stat_info.block_size * stat_info.blocks
-    disk.free_size = stat_info.block_size * stat_info.blocks_free
-    return disk
+    return self.from_mounted_disk(disk_info['id'], disk_info['name'])
   end
 
   def self.read_from_old_file(filename)
@@ -38,17 +43,9 @@ class HardDiskInfo < Disk
     content.gsub!(/\r\n?/, "\n")
     content_lines = content.lines
 
-    disk = HardDiskInfo.new
     line1_match =  /ID Disco:\s*(\d+)/.match(content_lines[0])
     raise SyntaxError.new("Incorrect info file format") if not line1_match
-    disk.id = line1_match[1].to_i
-    disk.name = content_lines[1].strip()
-
-    # Obtain disk space
-    stat_info = Filesystem.stat(filename)
-    disk.total_size = stat_info.block_size * stat_info.blocks
-    disk.free_size = stat_info.block_size * stat_info.blocks_free
-    return disk
+    return self.from_mounted_disk(line1_match[1].to_i, content_lines[1].strip())
   end
 
   def initialize

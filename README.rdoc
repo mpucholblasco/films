@@ -30,10 +30,10 @@ Generate file `/etc/logrotate.d/films` with content:
 Avoid fsck interactivity on boot
 Edit file /etc/default/rcS and set FSCKFIX=yes
 
+Daemons/Services
+----------------
 Service for delayed jobs:
-1. Edit file /etc/systemd/system/films_delayed_job.service and set this
-   content:
-
+* Edit file `/etc/systemd/system/films_delayed_job.service` and set this content:
 ```
 [Unit]
 Description=Films delayed jobs
@@ -47,6 +47,33 @@ ExecStart=/usr/share/films/bin/delayed_job start
 ExecStop=/usr/share/films/bin/delayed_job stop
 Restart=on-failure
 PIDFile=/usr/share/films/tmp/pids/delayed_job.pid
+```
+
+Service for crons:
+* Edit file `/etc/systemd/system/films_crons.service` and set this content:
+```
+[Unit]
+Description=Films crons
+Requires=mysql.service
+After=mysql.service
+
+[Service]
+Environment=RAILS_ENV=production
+Type=forking
+ExecStart=/usr/share/films/bin/bundle exec crono --piddir /usr/share/films/tmp/pids/ --process_name films_crons start
+ExecStop=/usr/share/films/bin/bundle exec crono --piddir /usr/share/films/tmp/pids/ --process_name films_crons stop
+Restart=on-failure
+PIDFile=/usr/share/films/tmp/pids/films_crons.pid
+```
+
+
+Then reload `systemd`, enable services to start at boot and start services:
+```
+sudo systemctl daemon-reload
+sudo systemctl enable films_delayed_job.service
+sudo systemctl enable films_crons.service
+sudo systemctl start films_delayed_job.service
+sudo systemctl start films_crons.service
 ```
 
 Copying files to external

@@ -31,12 +31,29 @@ class UpdateDiskInformationJob < ActiveJob::Base
     disk_id = args[0]
     logger.info "Updating disk information with disk id = #{disk_id} and job id = #{job_id}"
     job_progress = DelayedJobProgress.find(job_id)
-    UpdateDiskInformationJob.process(DISK_MOUNT_PATH, disk_id, job_progress)
+    UpdateDiskInformationJob.process_mounted_disk(DISK_MOUNT_PATH, disk_id, job_progress)
   end
 
-  def self.process(mount, disk_id, job_progress)
+  def self.process_local_disk(path, disk_id, job_progress)
     disk = nil
-    errors = ''
+    begin
+      path = File.realpath(path)
+    rescue Exception
+      raise StandardError.new(I18n.t(:update_error_disk_not_inserted))
+    end
+
+    begin
+      disk = HardDiskInfo.from_mounted_disk(path, disk.id, disk.name)
+      disk.ensure_exists
+    rescue ActiveRecord::RecordNotFound
+      raise StandardError.new(I18n.t(:update_error_disk_not_in_db))
+    end
+
+    self.process_disk(disk, path, [ '.' ], job_progress)
+  end
+
+  def self.process_mounted_disk(mount, disk_id, job_progress)
+    disk = nil
     begin
       mount = File.realpath(mount)
     rescue Exception
@@ -57,18 +74,22 @@ class UpdateDiskInformationJob < ActiveJob::Base
       raise StandardError.new(I18n.t(:update_error_inserted_disk_is_not_updating_one, :inserted_disk => disk.id, :updating_disk => disk_id))
     end
 
+    self.process_disk(disk, mount, PATHS_TO_PROCESS, job_progress)
+  end
+
+  def self.process_disk(disk, mount_path, folders_in_mount_path, job_progress)
     job_progress.upgrade_progress(0, I18n.t(:update_content_obtaining_disk_info))
 
-    hard_disk_files_updater_info = DisksHelper::HardDiskFilesUpdaterInfo.new(mount, disk_id)
-    PATHS_TO_PROCESS.each do |path|
-      Dir.glob("#{mount}/#{path}/**/*").select{ |e| File.file? e }.each do |file|
+    hard_disk_files_updater_info = DisksHelper::HardDiskFilesUpdaterInfo.new(mount_path, disk.id)
+    folders_in_mount_path.each do |path|
+      Dir.glob("#{mount_path}/#{path == '.' ? '' : "#{path}/"}**/*").select{ |e| File.file? e }.each do |file|
         hard_disk_files_updater_info.add_file(file)
       end
     end
 
     self.remove_files hard_disk_files_updater_info.get_files_to_remove, job_progress
-    self.add_files mount, hard_disk_files_updater_info.get_files_to_add, job_progress
-    self.update_files mount, hard_disk_files_updater_info.get_files_to_update, job_progress
+    errors = self.add_files(mount_path, hard_disk_files_updater_info.get_files_to_add, job_progress)
+    errors << self.update_files(mount_path, hard_disk_files_updater_info.get_files_to_update, job_progress)
 
     disk_db = Disk.find(disk.id)
     disk_db.last_sync = Time.zone.now
@@ -98,6 +119,7 @@ class UpdateDiskInformationJob < ActiveJob::Base
   end
 
   def self.add_files(mount, files_to_add, job_progress)
+    errors = ''
     job_progress.upgrade_progress(10, I18n.t(:update_content_adding_files, :files_number => files_to_add.length ))
     Rails.logger.info "Going to add <#{files_to_add.length}>"
     added_files = 0
@@ -120,9 +142,11 @@ class UpdateDiskInformationJob < ActiveJob::Base
         Rails.logger.debug "Error adding file #{file.inspect}. Reason: #{ex}"
       end
     end
+    errors
   end
 
   def self.update_files(mount, files_to_update, job_progress)
+    errors = ''
     job_progress.upgrade_progress(55, I18n.t(:update_content_updating_files, :files_number => files_to_update.length ))
     Rails.logger.info "Going to update <#{files_to_update.length}>"
     updated_files = 0
@@ -144,5 +168,6 @@ class UpdateDiskInformationJob < ActiveJob::Base
         Rails.logger.debug "Error updating file #{file.inspect}. Reason: #{ex}"
       end
     end
+    errors
   end
 end

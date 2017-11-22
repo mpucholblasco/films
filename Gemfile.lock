@@ -64,6 +64,9 @@ GEM
       execjs
     coffee-script-source (1.12.2)
     concurrent-ruby (1.0.4)
+    crono (1.1.2)
+      activerecord (>= 4.0)
+      activesupport (>= 4.0)
     daemons (1.2.4)
     debug_inspector (0.0.2)
     delayed_job (4.1.2)
@@ -212,6 +215,7 @@ DEPENDENCIES
   ci_reporter
   ci_reporter_rspec
   coffee-rails (~> 4.1.0)
+  crono
   daemons
   delayed_job_active_record
   faker (~> 1.6.1)

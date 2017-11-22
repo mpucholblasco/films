@@ -34,10 +34,12 @@ gem "i18n-js", ">= 3.0.0.rc8"
 
 # Queue gem system
 gem 'delayed_job_active_record'
-gem 'daemons'
 
 # Filesystem information
 gem 'sys-filesystem'
+
+# Daemons
+gem 'daemons'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
@@ -47,6 +49,9 @@ gem 'sys-filesystem'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
+
+# Crons (crono: https://github.com/plashchynski/crono)
+gem 'crono'
 
 group :development do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

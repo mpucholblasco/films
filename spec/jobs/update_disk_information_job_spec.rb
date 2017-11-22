@@ -74,7 +74,7 @@ RSpec.describe UpdateDiskInformationJob, type: :job do
 
     # testing
     expect {
-      UpdateDiskInformationJob.process(mount, 2, DelayedJobProgress.new)
+      UpdateDiskInformationJob.process_mounted_disk(mount, 2, DelayedJobProgress.new)
     }.to raise_error(Exception)
   end
 
@@ -91,7 +91,7 @@ RSpec.describe UpdateDiskInformationJob, type: :job do
     allow(disk).to receive(:ensure_exists).and_return(true)
 
     # testing
-    UpdateDiskInformationJob.process(mount, 2, DelayedJobProgress.new)
+    UpdateDiskInformationJob.process_mounted_disk(mount, 2, DelayedJobProgress.new)
   end
 
   private

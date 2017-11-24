@@ -30,7 +30,7 @@ class MoveFromServerToExternalJob < ActiveJob::Base
     # Do something later
     logger.debug "Performing MoveFromServerToExternalJob with job id = #{job_id}"
     job_progress = DelayedJobProgress.find(job_id)
-    MoveFromServerToExternalJob.process(MoveFromServerToExternalJob.SOURCE_PATH, MoveFromServerToExternalJob.TARGET_PATH, job_progress)
+    MoveFromServerToExternalJob.process(SOURCE_PATH, TARGET_PATH, job_progress)
   end
 
   def self.process(source_path, target_path, job_progress)

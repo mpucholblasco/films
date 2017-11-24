@@ -1,9 +1,17 @@
 es:
+  # Jobs
+  move_from_server_to_external_job_description: "Mover ficheros del disco interno a uno externo"
+  move_from_server_to_external_job_obtaining_info: "Obteniendo información sobre los ficheros a copiar"
+  move_from_server_to_external_job_moving_file: "Moviendo fichero %{filename}"
+  move_from_server_to_external_full_disk: "Disco lleno"
+  move_from_server_to_external_info_about_moved: "Movidos %{moved_files} de %{total_files} ficheros"
+
   # Disks
   disks: "Discos"
   disk: "Disco"
   new_disk: "Nuevo disco"
   disk_prohibited_error: "No se puede guardar este disco"
+  update_content_job_description: "Actualizando información del disco %{disk_name}"
   update_content_obtaining_disk_info: "Obteniendo información del disco"
   update_content_deleting_files: "Eliminando %{files_number} ficheros"
   update_content_adding_files: "Añadiendo %{files_number} ficheros"
@@ -34,6 +42,9 @@ es:
   hash_info: "Información"
   file_disk_error: "Error en campo de fichero"
 
+  # Jobs
+  jobs: "Trabajos"
+
   # Downloads
   downloads: "Descargas"
   total_downloads: "Total descargas"
@@ -44,6 +55,7 @@ es:
   name: "Nombre"
   type: "Tipo"
   actions: "Acciones"
+  creation: "Creación"
   last_update: "Última actualización"
   total_size: "Tamaño total"
   free_size: "Espacio libre"

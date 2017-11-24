@@ -15,6 +15,9 @@ Rails.application.routes.draw do
   # Files
   get 'files' => 'file#index'
 
+  # Jobs
+  resources :jobs, only: [:index,:show]
+
   # Tools
   get 'tools' => 'tools#index'
   get 'tools/find_duplicates' => 'tools#find_duplicates'

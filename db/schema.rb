@@ -11,7 +11,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170531161907) do
+ActiveRecord::Schema.define(version: 20171124165828) do
+
+  create_table "crono_jobs", force: :cascade do |t|
+    t.string   "job_id",            limit: 255,        null: false
+    t.text     "log",               limit: 4294967295
+    t.datetime "last_performed_at"
+    t.boolean  "healthy",           limit: 1
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+  end
+
+  add_index "crono_jobs", ["job_id"], name: "index_crono_jobs_on_job_id", unique: true, using: :btree
 
   create_table "delayed_job_progresses", primary_key: "job_id", force: :cascade do |t|
     t.integer  "progress_max",   limit: 4,     null: false
@@ -21,6 +32,7 @@ ActiveRecord::Schema.define(version: 20170531161907) do
     t.datetime "updated_at",                   null: false
     t.integer  "finish_status",  limit: 4
     t.text     "error_message",  limit: 65535
+    t.string   "description",    limit: 255
   end
 
   create_table "delayed_jobs", force: :cascade do |t|
@@ -72,6 +84,15 @@ ActiveRecord::Schema.define(version: 20170531161907) do
   add_index "file_disks", ["disk_id", "filename"], name: "index_file_disks_on_disk_id_and_filename", unique: true, using: :btree
   add_index "file_disks", ["disk_id"], name: "index_file_disks_on_disk_id", using: :btree
 
+  create_table "local_disk_mount_paths", force: :cascade do |t|
+    t.string   "path",       limit: 255
+    t.integer  "disk_id",    limit: 4
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  add_index "local_disk_mount_paths", ["disk_id"], name: "index_local_disk_mount_paths_on_disk_id", using: :btree
+
   create_table "update_stats", force: :cascade do |t|
     t.string   "name",         limit: 255
     t.integer  "update_count", limit: 4
@@ -82,4 +103,5 @@ ActiveRecord::Schema.define(version: 20170531161907) do
   add_index "update_stats", ["name"], name: "index_update_stats_on_name", unique: true, using: :btree
 
   add_foreign_key "file_disks", "disks"
+  add_foreign_key "local_disk_mount_paths", "disks"
 end

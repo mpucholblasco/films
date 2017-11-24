@@ -26,4 +26,20 @@ class DelayedJobProgress < ActiveRecord::Base
     self.error_message = error_message
     self.save
   end
+
+  def self.where_unfinished_or_finished_in_seven_days
+    self.where('finish_status = ? OR (finish_status <> ? AND DATE(updated_at) >= ?)', :UNFINISHED, :UNFINISHED, Date.today - 1.week)
+  end
+
+  def self.finished_delayed_job
+    finished = DelayedJobProgress.new
+    finished.progress = 100
+    finished.progress_max = 100
+    finished.finish_status = :FINISHED_CORRECTLY
+    finished.progress_stage = I18n.t(:update_content_finish)
+    finished.error_message = nil
+    finished.created_at = Time.zone.now,
+    finished.updated_at = Time.zone.now,
+    finished
+  end
 end

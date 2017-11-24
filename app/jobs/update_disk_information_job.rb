@@ -5,8 +5,10 @@ class UpdateDiskInformationJob < ActiveJob::Base
   queue_as :update_disk_information
 
   before_enqueue do |job|
-    logger.debug "Initializing delayed job progress with job: #{job.inspect}"
+    logger.debug "Initializing delayed UpdateDiskInformationJob progress with job: #{job.inspect}"
     job_progress = DelayedJobProgress.new
+    disk = Disk.find(job.arguments[0])
+    job_progress.description = I18n.t(:update_content_job_description, :disk_name => disk.name)
     job_progress.job_id = job.job_id
     job_progress.progress_stage = I18n.t(:starting_progress)
     job_progress.progress_max = 100
@@ -14,14 +16,14 @@ class UpdateDiskInformationJob < ActiveJob::Base
   end
 
   after_perform do |job|
-    logger.info "Job #{job_id} finished correctly"
+    logger.info "UpdateDiskInformationJob #{job_id} finished correctly"
     job_progress = DelayedJobProgress.find(job_id)
     job_progress.upgrade_progress(100, I18n.t(:update_content_finish))
     job_progress.finish_correctly
   end
 
   rescue_from(StandardError) do |exception|
-    logger.info "Job #{job_id} raised exception: #{exception.inspect}"
+    logger.info "UpdateDiskInformationJob #{job_id} raised exception: #{exception.inspect}"
     job_progress = DelayedJobProgress.find(job_id)
     job_progress.upgrade_progress(100, "Error")
     job_progress.finish_with_errors(exception.message)

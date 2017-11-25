@@ -64,7 +64,7 @@ class MoveFromServerToExternalJob < ActiveJob::Base
   end
 
   def self.obtain_files_to_move(source_path)
-    Dir.glob(source_path).select{ |e| File.file? e }
+    Dir.glob(File.join(source_path, '*')).select{ |e| File.file? e }
   end
 
   def self.get_max_progress_to_move(files)

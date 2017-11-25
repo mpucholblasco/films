@@ -18,7 +18,11 @@ RSpec.describe MoveFromServerToExternalJob, type: :job do
   end
 
   it "get max_progress_to_move for several elements" do
-    files = [ FakeFile.new(10), FakeFile.new(20) ]
+    files = [ '/non-existing-1', '/non-existing-2' ]
+    blocks = [ 10, 20 ]
+    files.each_with_index { |file,index|
+      allow(File).to receive(:stat).with(file).and_return(FakeFileStat.new(blocks[index]))
+    }
 
     real_max_progress_to_move = MoveFromServerToExternalJob.get_max_progress_to_move(files)
     expected_max_progress_to_move = 10 + 20
@@ -36,19 +40,29 @@ RSpec.describe MoveFromServerToExternalJob, type: :job do
 
   it "process with one file works" do
     source_path = '/non-existent-path'
+    source_filename = "#{source_path}/non-existing-file"
     target_path = '/another-non-existent-path'
+    target_filename = "#{target_path}/non-existing-file"
     allow(Dir).to receive(:glob).and_return([])
-    allow(Dir).to receive(:glob).with(source_path).and_return([ FakeFile.new(10) ])
+    allow(Dir).to receive(:glob).with(source_path).and_return([ source_filename ])
+    allow(File).to receive(:file?).with(source_filename).and_return(true)
+    allow(File).to receive(:stat).with(source_filename).and_return(FakeFileStat.new(10))
+    allow(File).to receive(:rename).with(source_filename, target_filename).and_return(0)
 
     MoveFromServerToExternalJob.process(source_path, target_path, DelayedJobProgress.new)
   end
 
   it "process with one file and full disk" do
     source_path = '/non-existent-path'
+    source_filename = "#{source_path}/non-existing-file"
     target_path = '/another-non-existent-path'
+    target_filename = "#{target_path}/non-existing-file"
     allow(Dir).to receive(:glob).and_return([])
-    allow(Dir).to receive(:glob).with(source_path).and_return([ FakeFileFullDisk.new(10) ])
-    allow(File).to receive(:unlink).with('/another-non-existent-path/basename').and_return(true)
+    allow(Dir).to receive(:glob).with(source_path).and_return([ source_filename ])
+    allow(File).to receive(:file?).with(source_filename).and_return(true)
+    allow(File).to receive(:stat).with(source_filename).and_return(FakeFileStat.new(10))
+    allow(File).to receive(:rename).with(source_filename, target_filename).and_raise(IOError.new('Full disk'))
+    allow(File).to receive(:unlink).with(target_filename).and_return(true)
 
     expect {
       MoveFromServerToExternalJob.process(source_path, target_path, DelayedJobProgress.new)
@@ -57,31 +71,13 @@ RSpec.describe MoveFromServerToExternalJob, type: :job do
 
   private
 
-  class FakeFile
+  class FakeFileStat
     def initialize(blocks)
       @blocks = blocks
     end
 
-    def rename(targetname)
-      true
-    end
-
-    def basename
-      'basename'
-    end
-
     def blocks
       @blocks
-    end
-
-    def file?
-      true
-    end
-  end
-
-  class FakeFileFullDisk < FakeFile
-    def rename(targetname)
-      raise IOError.new('full disk')
     end
   end
 end

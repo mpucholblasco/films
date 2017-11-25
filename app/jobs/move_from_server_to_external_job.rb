@@ -42,29 +42,30 @@ class MoveFromServerToExternalJob < ActiveJob::Base
     moved_files = 0
     begin
       files_to_move.each do |file|
-        job_progress.upgrade_progress(5 + (processed_progress_to_move * 95 / max_progress_to_move).floor, I18n.t(:move_from_server_to_external_job_moving_file, :filename => file.basename) + ". " + I18n.t(:move_from_server_to_external_info_about_moved, :moved_files => moved_files, :total_files => files_to_move.length))
-        target_filename = File.join(target_path, file.basename)
+        basename = File.basename(file)
+        job_progress.upgrade_progress(5 + (processed_progress_to_move * 95 / max_progress_to_move).floor, I18n.t(:move_from_server_to_external_job_moving_file, :filename => basename) + ". " + I18n.t(:move_from_server_to_external_info_about_moved, :moved_files => moved_files, :total_files => files_to_move.length))
+        target_filename = File.join(target_path, basename)
         begin
-          file.rename target_filename
+          File.rename(file, target_filename)
         rescue IOError => e
           File.unlink target_filename
           raise e
         end
-        processed_progress_to_move = processed_progress_to_move + file.blocks
+        processed_progress_to_move = processed_progress_to_move + File.stat(file).blocks
         moved_files = moved_files + 1
       end
       system("sync")
-    rescue IOError
+    rescue IOError => ex
       system("sync")
-      raise StandardError.new(I18n.t(:move_from_server_to_external_full_disk) + ". " + I18n.t(:move_from_server_to_external_info_about_moved, :moved_files => moved_files, :total_files => files_to_move.length))
+      raise StandardError.new(I18n.t(:move_from_server_to_external_full_disk) + ". " + I18n.t(:move_from_server_to_external_info_about_moved, :moved_files => moved_files, :total_files => files_to_move.length) + ". Original message: " + ex.message)
     end
   end
 
   def self.obtain_files_to_move(source_path)
-    Dir.glob(source_path).select{ |e| e.file? }
+    Dir.glob(source_path).select{ |e| File.file? e }
   end
 
   def self.get_max_progress_to_move(files)
-    files.reduce(0) { |sum, element| sum + element.blocks }
+    files.reduce(0) { |sum, e| sum + File.stat(e).blocks }
   end
 end

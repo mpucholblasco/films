@@ -40,12 +40,14 @@ class MoveFromServerToExternalJob < ActiveJob::Base
     max_progress_to_move = MoveFromServerToExternalJob.get_max_progress_to_move(files_to_move)
     processed_progress_to_move = 5
     moved_files = 0
+    logger.info("Moving #{files_to_move.length} files from internal disk to external path: #{target_path}")
     begin
       files_to_move.each do |file|
         basename = File.basename(file)
         job_progress.upgrade_progress(5 + (processed_progress_to_move * 95 / max_progress_to_move).floor, I18n.t(:move_from_server_to_external_job_moving_file, :filename => basename) + ". " + I18n.t(:move_from_server_to_external_info_about_moved, :moved_files => moved_files, :total_files => files_to_move.length))
         target_filename = File.join(target_path, basename)
         begin
+          logger.info("Moving file #{file} to #{target_filename}")
           File.rename(file, target_filename)
         rescue IOError => e
           File.unlink target_filename

@@ -41,6 +41,7 @@ class MoveFromServerToExternalJob < ActiveJob::Base
     processed_progress_to_move = 5
     moved_files = 0
     logger.info("Moving #{files_to_move.length} files from internal disk to external path: #{target_path}")
+    Dir.mkdir(target_path) if not File.directory? target_path
     begin
       files_to_move.each do |file|
         basename = File.basename(file)

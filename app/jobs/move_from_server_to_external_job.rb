@@ -1,3 +1,5 @@
+require 'fileutils'
+
 class MoveFromServerToExternalJob < ActiveJob::Base
   SOURCE_PATH = '/home/marcel/.aMule/Incoming/'
   TARGET_PATH = '/media/usb/procesar/'
@@ -49,7 +51,7 @@ class MoveFromServerToExternalJob < ActiveJob::Base
         target_filename = File.join(target_path, basename)
         begin
           logger.info("Moving file #{file} to #{target_filename}")
-          File.rename(file, target_filename)
+          FileUtils.mv(file, target_filename)
         rescue IOError => e
           File.unlink target_filename
           raise e

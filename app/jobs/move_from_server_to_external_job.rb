@@ -49,6 +49,7 @@ class MoveFromServerToExternalJob < ActiveJob::Base
         basename = File.basename(file)
         job_progress.upgrade_progress(5 + (processed_progress_to_move * 95 / max_progress_to_move).floor, I18n.t(:move_from_server_to_external_job_moving_file, :filename => basename) + ". " + I18n.t(:move_from_server_to_external_info_about_moved, :moved_files => moved_files, :total_files => files_to_move.length))
         target_filename = File.join(target_path, basename)
+        processed_progress_to_move = processed_progress_to_move + File.stat(file).blocks
         begin
           logger.info("Moving file #{file} to #{target_filename}")
           FileUtils.mv(file, target_filename)
@@ -56,7 +57,6 @@ class MoveFromServerToExternalJob < ActiveJob::Base
           File.unlink target_filename
           raise e
         end
-        processed_progress_to_move = processed_progress_to_move + File.stat(file).blocks
         moved_files = moved_files + 1
       end
       system("sync")

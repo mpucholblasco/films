@@ -34,6 +34,7 @@ RSpec.describe MoveFromServerToExternalJob, type: :job do
     target_path = '/another-non-existent-path'
     allow(Dir).to receive(:glob).and_return([])
     allow(Dir).to receive(:glob).with(File.join(source_path, '*')).and_return([])
+    allow(File).to receive(:directory?).with(target_path).and_return(true)
 
     MoveFromServerToExternalJob.process(source_path, target_path, DelayedJobProgress.new)
   end
@@ -45,9 +46,10 @@ RSpec.describe MoveFromServerToExternalJob, type: :job do
     target_filename = "#{target_path}/non-existing-file"
     allow(Dir).to receive(:glob).and_return([])
     allow(Dir).to receive(:glob).with(File.join(source_path, '*')).and_return([ source_filename ])
+    allow(File).to receive(:directory?).with(target_path).and_return(true)
     allow(File).to receive(:file?).with(source_filename).and_return(true)
     allow(File).to receive(:stat).with(source_filename).and_return(FakeFileStat.new(10))
-    allow(File).to receive(:rename).with(source_filename, target_filename).and_return(0)
+    allow(FileUtils).to receive(:mv).with(source_filename, target_filename).and_return(0)
 
     MoveFromServerToExternalJob.process(source_path, target_path, DelayedJobProgress.new)
   end
@@ -59,9 +61,10 @@ RSpec.describe MoveFromServerToExternalJob, type: :job do
     target_filename = "#{target_path}/non-existing-file"
     allow(Dir).to receive(:glob).and_return([])
     allow(Dir).to receive(:glob).with(File.join(source_path, '*')).and_return([ source_filename ])
+    allow(File).to receive(:directory?).with(target_path).and_return(true)
     allow(File).to receive(:file?).with(source_filename).and_return(true)
     allow(File).to receive(:stat).with(source_filename).and_return(FakeFileStat.new(10))
-    allow(File).to receive(:rename).with(source_filename, target_filename).and_raise(IOError.new('Full disk'))
+    allow(FileUtils).to receive(:mv).with(source_filename, target_filename).and_raise(IOError.new('Full disk'))
     allow(File).to receive(:unlink).with(target_filename).and_return(true)
 
     expect {

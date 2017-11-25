@@ -1,5 +1,4 @@
 require 'fileutils'
-require 'shellwords'
 
 class MoveFromServerToExternalJob < ActiveJob::Base
   SOURCE_PATH = '/home/marcel/.aMule/Incoming/'
@@ -52,7 +51,7 @@ class MoveFromServerToExternalJob < ActiveJob::Base
         target_filename = File.join(target_path, basename)
         begin
           logger.info("Moving file #{file} to #{target_filename}")
-          FileUtils.mv(file.shellescape, target_filename)
+          FileUtils.mv(file, target_filename)
         rescue IOError => e
           File.unlink target_filename
           raise e
@@ -68,7 +67,7 @@ class MoveFromServerToExternalJob < ActiveJob::Base
   end
 
   def self.obtain_files_to_move(source_path)
-    Dir.glob(File.join(source_path, '*')).select{ |e| File.file? e }
+    Dir.glob(File.join(source_path, '*')).select{ |e| File.file? e }.sort
   end
 
   def self.get_max_progress_to_move(files)

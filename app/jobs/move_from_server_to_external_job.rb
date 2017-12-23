@@ -19,6 +19,7 @@ class MoveFromServerToExternalJob < ActiveJob::Base
     job_progress = DelayedJobProgress.find(job_id)
     job_progress.upgrade_progress(100, I18n.t(:update_content_finish))
     job_progress.finish_correctly
+    system("sync")
   end
 
   rescue_from(StandardError) do |exception|
@@ -26,6 +27,7 @@ class MoveFromServerToExternalJob < ActiveJob::Base
     job_progress = DelayedJobProgress.find(job_id)
     job_progress.upgrade_progress(100, "Error")
     job_progress.finish_with_errors(exception.message)
+    system("sync")
   end
 
   def perform(*args)
@@ -59,9 +61,7 @@ class MoveFromServerToExternalJob < ActiveJob::Base
         end
         moved_files = moved_files + 1
       end
-      system("sync")
     rescue IOError => ex
-      system("sync")
       raise StandardError.new(I18n.t(:move_from_server_to_external_full_disk) + ". " + I18n.t(:move_from_server_to_external_info_about_moved, :moved_files => moved_files, :total_files => files_to_move.length) + ". Original message: " + ex.message)
     end
   end

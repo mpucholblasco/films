@@ -36,7 +36,7 @@ class DelayedJobProgress < ActiveRecord::Base
 
   def is_cancelled?
     self.reload
-    self.finish_status == :CANCELLED
+    self.CANCELLED?
   end
 
   def self.where_unfinished_or_finished_in_seven_days

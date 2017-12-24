@@ -72,7 +72,40 @@ RSpec.describe MoveFromServerToExternalJob, type: :job do
     }.to raise_error(StandardError)
   end
 
+  it "process cancelled" do
+    source_path = '/non-existent-path'
+    source_filename = "#{source_path}/non-existing-file"
+    source_filename2 = "#{source_path}/non-existing-file2"
+    source_filename3 = "#{source_path}/non-existing-file3"
+    target_path = '/another-non-existent-path'
+    target_filename = "#{target_path}/non-existing-file"
+    allow(Dir).to receive(:glob).and_return([])
+    allow(Dir).to receive(:glob).with(File.join(source_path, '*')).and_return([ source_filename, source_filename2, source_filename3 ])
+    allow(File).to receive(:directory?).and_return(true)
+    allow(File).to receive(:file?).and_return(true)
+    allow(File).to receive(:stat).and_return(FakeFileStat.new(10))
+    allow(FileUtils).to receive(:mv).and_return(0)
+
+    expect(FileUtils).to receive(:mv).exactly(1).times
+
+    job_progress = FakeCancellableDelayedJobProgress.new(1)
+    MoveFromServerToExternalJob.process(source_path, target_path, job_progress)
+  end
+
   private
+
+  class FakeCancellableDelayedJobProgress < DelayedJobProgress
+    def initialize(number_of_times_that_upgrade_should_work_until_cancel)
+      super()
+      @number_of_times_that_upgrade_should_work_until_cancel = number_of_times_that_upgrade_should_work_until_cancel
+      @number_of_times_called = -1
+    end
+
+    def is_cancelled?
+      @number_of_times_called = @number_of_times_called + 1
+      @number_of_times_called >= @number_of_times_that_upgrade_should_work_until_cancel
+    end
+  end
 
   class FakeFileStat
     def initialize(blocks)

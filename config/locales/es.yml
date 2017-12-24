@@ -18,6 +18,7 @@ es:
   update_content_updating_files: "Actualizando %{files_number} ficheros"
   update_content_message: "Inserta el disco '%{disk_name}' en el servidor y haz click en el botón 'Empezar'."
   update_content_finish: "Proceso finalizado correctamente."
+  update_content_cancelled: "Proceso cancelado"
   update_content_error: "Error: %{message}"
 
   # Update error messages
@@ -66,6 +67,7 @@ es:
 
   # Actions
   show: "Mostrar"
+  cancel: "Cancelar"
   update_content: "Actualizar contenido"
   edit: "Editar"
   destroy: "Eliminar"

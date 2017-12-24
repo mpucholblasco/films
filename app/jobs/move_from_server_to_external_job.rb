@@ -5,6 +5,10 @@ class MoveFromServerToExternalJob < ActiveJob::Base
   TARGET_PATH = '/media/usb/procesar/'
   queue_as :copy_from_server_to_external
 
+  def max_run_time
+    24 * 3600 # 1 day
+  end
+
   before_enqueue do |job|
     logger.debug "Initializing delayed MoveFromServerToExternalJob progress with job: #{job.inspect}"
     job_progress = DelayedJobProgress.new
@@ -48,6 +52,7 @@ class MoveFromServerToExternalJob < ActiveJob::Base
     Dir.mkdir(target_path) if not File.directory? target_path
     begin
       files_to_move.each do |file|
+        break if job_progress.is_cancelled?
         basename = File.basename(file)
         logger.info("Gonna process basename #{basename}")
         logger.info("max_progress_to_move = #{max_progress_to_move}, processed_progress_to_move = #{processed_progress_to_move}, moved_files = #{moved_files}")
@@ -59,9 +64,11 @@ class MoveFromServerToExternalJob < ActiveJob::Base
           FileUtils.mv(file, target_filename)
           logger.info("After moving file #{file} to #{target_filename}")
         rescue StandardError => e
-          logger.info("Exception raised on file #{file} with backtrace #{e.backtrace}")
-          File.unlink target_filename
-          raise e
+          logger.info("Exception raised on file #{file}, with exception class '#{e.class}', message '#{e.message}' and backtrace #{e.backtrace}")
+          File.unlink target_filename if File.exists?(target_filename)
+
+          # Ignore the following errors: invalid argument (can not find origin file)
+          raise e if not e.is_a? Errno::EINVAL
         end
         moved_files = moved_files + 1
       end

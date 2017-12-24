@@ -23,4 +23,19 @@ class JobsController < ApplicationController
       }
     end
   end
+
+  def destroy
+    job = DelayedJobProgress.find(params[:id])
+    job.destroy
+    redirect_to jobs_path
+  end
+
+  def update
+    job = DelayedJobProgress.find(params[:id])
+    if params[:task] == 'cancel'
+      logger.info "Cancelling job with ID: #{job.job_id}"
+      job.cancel
+    end
+    redirect_to jobs_path
+  end
 end

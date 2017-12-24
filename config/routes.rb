@@ -16,7 +16,7 @@ Rails.application.routes.draw do
   get 'files' => 'file#index'
 
   # Jobs
-  resources :jobs, only: [:index,:show]
+  resources :jobs, only: [:index,:show,:destroy,:update]
 
   # Tools
   get 'tools' => 'tools#index'

@@ -1,5 +1,5 @@
 class DelayedJobProgress < ActiveRecord::Base
-  enum finish_status: { UNFINISHED: 1, FINISHED_WITH_ERRORS: 2, FINISHED_CORRECTLY: 3 }
+  enum finish_status: { UNFINISHED: 1, FINISHED_WITH_ERRORS: 2, FINISHED_CORRECTLY: 3, CANCELLED: 4 }
   before_save :default_values
   def default_values
     self.progress_max ||= 100
@@ -7,11 +7,18 @@ class DelayedJobProgress < ActiveRecord::Base
     self.finish_status ||= :UNFINISHED
   end
 
-  self.primary_key='job_id'
+  self.primary_key = 'job_id'
 
   def upgrade_progress(progress, progress_stage = nil)
     self.progress = progress
     self.progress_stage = progress_stage if progress_stage
+    self.save
+  end
+
+  def cancel
+    self.progress = self.progress_max
+    self.finish_status = :CANCELLED
+    self.progress_stage = I18n.t(:update_content_cancelled)
     self.save
   end
 
@@ -25,6 +32,11 @@ class DelayedJobProgress < ActiveRecord::Base
     self.finish_status = :FINISHED_WITH_ERRORS
     self.error_message = error_message
     self.save
+  end
+
+  def is_cancelled?
+    self.reload
+    self.finish_status == :CANCELLED
   end
 
   def self.where_unfinished_or_finished_in_seven_days

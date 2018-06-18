@@ -8,12 +8,7 @@ pipeline {
   }
 
   environment {
-    DB_USER = 'simba'
-    DB_PASSWORD = 'simba'
-    DB_NAME = 'simba_test'
-    DB_VERSION = '9.4.14'
-    ES_VERSION = '5.3.3'
-    SELENIUM_VERSION = '3.11'
+    MYSQL_ROOT_PASSWORD = 'mypassword'
   }
 
   stages {

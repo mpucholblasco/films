@@ -22,20 +22,22 @@ pipeline {
         kubernetes {
           label 'films'
           defaultContainer 'jnlp'
-          containerTemplate {
-            name 'mysql'
-            image 'mysql:5.6'
-            envVars: [
-              envVar(key: 'MYSQL_ROOT_PASSWORD', value: env.MYSQL_ROOT_PASSWORD)
-            ]
-          }
-
-          containerTemplate {
-            name 'ruby'
-            image 'ruby:2.3.1'
-            ttyEnabled true
-            command 'cat'
-          }
+          yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: mysql
+    image: mysql:5.6
+    env:
+      - name: MYSQL_ROOT_PASSWORD
+        value: ${env.MYSQL_ROOT_PASSWORD}
+  - name: ruby
+    image: ruby:2.3.1
+    command:
+    - cat
+    tty: true
+"""
         }
       }
 

@@ -19,23 +19,23 @@ pipeline {
   stages {
     stage("Preparing environment") {
       agent {
-        label 'films'
-        defaultContainer 'jnlp'
-        containerTemplate {
-          name 'mysql'
-          image 'mysql:5.6'
-          ttyEnabled true
-          command 'cat'
-          envVars: [
-            envVar(key: 'MYSQL_ROOT_PASSWORD', value: env.MYSQL_ROOT_PASSWORD)
-          ]
-        }
+        kubernetes {
+          label 'films'
+          defaultContainer 'jnlp'
+          containerTemplate {
+            name 'mysql'
+            image 'mysql:5.6'
+            envVars: [
+              envVar(key: 'MYSQL_ROOT_PASSWORD', value: env.MYSQL_ROOT_PASSWORD)
+            ]
+          }
 
-        containerTemplate {
-          name 'ruby'
-          image 'ruby:2.3.1'
-          ttyEnabled true
-          command 'cat'
+          containerTemplate {
+            name 'ruby'
+            image 'ruby:2.3.1'
+            ttyEnabled true
+            command 'cat'
+          }
         }
       }
 

@@ -26,7 +26,7 @@ spec:
     image: mysql:5.6
     env:
       - name: MYSQL_ROOT_PASSWORD
-        value: ${MYSQL_ROOT_PASSWORD}
+        value: "${env.MYSQL_ROOT_PASSWORD}"
   - name: ruby
     image: ruby:2.3.1
     command:

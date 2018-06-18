@@ -1,101 +1,91 @@
 #!groovy
 pipeline {
-  agent any
+  agent none
 
   options {
     buildDiscarder(logRotator(numToKeepStr:'10'))
     skipDefaultCheckout()
   }
 
+  environment {
+    DB_USER = 'simba'
+    DB_PASSWORD = 'simba'
+    DB_NAME = 'simba_test'
+    DB_VERSION = '9.4.14'
+    ES_VERSION = '5.3.3'
+    SELENIUM_VERSION = '3.11'
+  }
+
   stages {
-    stage("Start database") {
-      environment {
-        MYSQL_ROOT_PASSWORD = 'mypassword'
+    stage("Preparing environment") {
+      agent {
+        label 'films'
+        defaultContainer 'jnlp'
+        containerTemplate {
+          name 'mysql'
+          image 'mysql:5.6'
+          ttyEnabled true
+          command 'cat'
+          envVars: [
+            envVar(key: 'MYSQL_ROOT_PASSWORD', value: env.MYSQL_ROOT_PASSWORD)
+          ]
+        }
+
+        containerTemplate {
+          name 'ruby'
+          image 'ruby:2.3.1'
+          ttyEnabled true
+          command 'cat'
+        }
       }
 
       steps {
-        script {
-          docker.image('mysql:5.6').withRun("-e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}") { mysql_container ->
-            stage("Wait until DB will be accessible") {
-              try {
-                timeout(time: 120, unit: 'SECONDS') {
-                  waitUntil {
-                    try {
-                      sh "docker exec ${mysql_container.id} mysql --user=root --password='${MYSQL_ROOT_PASSWORD}' -e 'SELECT 1'"
-                      return true
-                    } catch (exception) {
-                      return false
-                    }
-                  }
-                }
-              } catch (timeout_exception) {
-                error "Couldn't connect to DB. See previous logs for more details."
-              }
+        container('ruby') {
+          script {
+            stage("Checkout") {
+              checkout scm
             }
 
-            docker.image('ruby:2.3.1').inside("--link ${mysql_container.id}:mysql") {
-              stage("Checkout") {
-                checkout scm
+            stage("Installing bundler") {
+              sh "gem install bundler --no-rdoc --no-ri"
+            }
+
+            stage("Installing dependencies") {
+              sh "bundle install"
+              sh "apt-get -qq update && apt-get -qq -y install nodejs"
+            }
+
+            withEnv(["DATABASE_URL=mysql2://root:${MYSQL_ROOT_PASSWORD}@mysql/films_test", "RAILS_ENV=test"]) {
+              stage("Preparing DB") {
+                sh "bundle exec rake db:create"
               }
 
-              stage("Installing bundler") {
-                sh "gem install bundler --no-rdoc --no-ri"
+              stage("Executing tests") {
+                sh "bundle exec rake ci:setup:rspec spec"
+
+                // Publish spec results
+                junit 'spec/reports/*.xml'
+
+                // Publish rcov results (requires HTML Publisher plugin)
+                publishHTML (target: [
+                  allowMissing: false,
+                  alwaysLinkToLastBuild: false,
+                  keepAll: true,
+                  reportDir: 'coverage',
+                  reportFiles: 'index.html',
+                  reportName: "RCov Report"
+                ])
               }
 
-              stage("Installing dependencies") {
-                sh "bundle install"
-                sh "apt-get -qq update && apt-get -qq -y install nodejs"
-              }
-
-              withEnv(["DATABASE_URL=mysql2://root:${MYSQL_ROOT_PASSWORD}@mysql/films_test", "RAILS_ENV=test"]) {
-                stage("Preparing DB") {
-                  sh "bundle exec rake db:create"
-                }
-
-                stage("Executing tests") {
-                  sh "bundle exec rake ci:setup:rspec spec"
-
-                  // Publish spec results
-                  junit 'spec/reports/*.xml'
-
-                  // Publish rcov results (requires HTML Publisher plugin)
-                  publishHTML (target: [
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: false,
-                    keepAll: true,
-                    reportDir: 'coverage',
-                    reportFiles: 'index.html',
-                    reportName: "RCov Report"
-                  ])
-                }
-
-                stage("Security scan") {
-                  sh "bundle exec brakeman -o brakeman-output.tabs --no-progress --separate-models"
-                  // Requires Brakeman Plugin
-                  publishBrakeman 'brakeman-output.tabs'
-                }
+              stage("Security scan") {
+                sh "bundle exec brakeman -o brakeman-output.tabs --no-progress --separate-models"
+                // Requires Brakeman Plugin
+                publishBrakeman 'brakeman-output.tabs'
               }
             }
           }
         }
       }
-    }
-  }
-
-  post {
-    success {
-      slackSend color: '#00FF00',
-        message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
-    }
-
-    failure {
-      emailext subject: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-        body: """<p>FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
-        <p>Check console output at "<a href="${env.BUILD_URL}">${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>"</p>""",
-        recipientProviders: [[$class: 'DevelopersRecipientProvider']]
-
-      slackSend color: '#FF0000',
-        message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
     }
   }
 }

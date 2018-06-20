@@ -21,6 +21,13 @@ pipeline {
 apiVersion: v1
 kind: Pod
 spec:
+  nodeSelector:
+    kops.k8s.io/instancegroup: jenkins-nodes
+  tolerations:
+  - key: dedicated
+    operator: Equal
+    value: jenkins-nodes
+    effect: NoSchedule
   containers:
   - name: mysql
     image: mysql:5.6

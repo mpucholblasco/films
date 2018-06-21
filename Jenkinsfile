@@ -21,8 +21,15 @@ pipeline {
 apiVersion: v1
 kind: Pod
 spec:
-  nodeSelector:
-    kops.k8s.io/instancegroup: jenkins-nodes
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kops.k8s.io/instancegroup
+            operator: In
+            values:
+            - jenkins-nodes
   tolerations:
   - key: dedicated
     operator: Equal

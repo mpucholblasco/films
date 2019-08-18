@@ -83,6 +83,7 @@ class MoveFromServerToExternalJob < ActiveJob::Base
     begin
       disk = HardDiskInfo.read_from_mounted_disk(mount_path)
       disk.ensure_exists
+      logger.info("Detected external disk: #{disk.inspect}")
     rescue StandardError => e
       logger.error("Couldn't obtain information from external disk. Error: #{e.inspect}")
       raise StandardError.new(I18n.t(:move_from_server_to_external_no_external_disk))

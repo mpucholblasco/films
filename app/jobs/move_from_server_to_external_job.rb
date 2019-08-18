@@ -31,13 +31,7 @@ class MoveFromServerToExternalJob < ActiveJob::Base
     logger.info "MoveFromServerToExternalJob #{job_id} raised exception: #{exception.inspect}"
     job_progress = DelayedJobProgress.find(job_id)
     job_progress.upgrade_progress(100, "Error")
-    err_message = case exception
-    when Errno::ENOSPC
-      I18n.t(:move_from_server_to_external_full_disk)
-    else
-      exception.message
-    end
-    job_progress.finish_with_errors(err_message)
+    job_progress.finish_with_errors(exception.message)
     system("sync")
   end
 
@@ -80,14 +74,19 @@ class MoveFromServerToExternalJob < ActiveJob::Base
         end
         moved_files = moved_files + 1
       end
-    rescue IOError => ex
+    rescue IOError, Errno::ENOSPC => ex
       raise StandardError.new(I18n.t(:move_from_server_to_external_full_disk) + ". " + I18n.t(:move_from_server_to_external_info_about_moved, :moved_files => moved_files, :total_files => files_to_move.length) + ". Original message: " + ex.message)
     end
   end
 
   def self.check_external_disk(mount_path)
-    disk = HardDiskInfo.read_from_mounted_disk(mount_path)
-    disk.ensure_exists
+    begin
+      disk = HardDiskInfo.read_from_mounted_disk(mount_path)
+      disk.ensure_exists
+    rescue StandardError => e
+      logger.error("Couldn't obtain information from external disk. Error: #{e.inspect}")
+      raise StandardError.new(I18n.t(:move_from_server_to_external_no_external_disk))
+    end
   end
 
   def self.obtain_files_to_move(source_path)

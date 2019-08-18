@@ -4,6 +4,7 @@ es:
   move_from_server_to_external_job_obtaining_info: "Obteniendo información sobre los ficheros a copiar"
   move_from_server_to_external_job_moving_file: "Moviendo fichero %{filename}"
   move_from_server_to_external_full_disk: "Disco lleno"
+  move_from_server_to_external_no_external_disk: "Disco externo no detectado"
   move_from_server_to_external_info_about_moved: "Movidos %{moved_files} de %{total_files} ficheros"
 
   # Disks

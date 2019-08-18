@@ -2,7 +2,8 @@ require 'fileutils'
 
 class MoveFromServerToExternalJob < ActiveJob::Base
   SOURCE_PATH = '/home/marcel/.aMule/Incoming/'
-  TARGET_PATH = '/media/usb/procesar/'
+  MOUNT_PATH = '/media/usb'
+  TARGET_PATH = "#{MOUNT_PATH}/procesar/"
   queue_as :copy_from_server_to_external
 
   def max_run_time
@@ -30,7 +31,13 @@ class MoveFromServerToExternalJob < ActiveJob::Base
     logger.info "MoveFromServerToExternalJob #{job_id} raised exception: #{exception.inspect}"
     job_progress = DelayedJobProgress.find(job_id)
     job_progress.upgrade_progress(100, "Error")
-    job_progress.finish_with_errors(exception.message)
+    err_message = case exception
+    when Errno::ENOSPC
+      I18n.t(:move_from_server_to_external_full_disk)
+    else
+      exception.message
+    end
+    job_progress.finish_with_errors(err_message)
     system("sync")
   end
 
@@ -38,16 +45,17 @@ class MoveFromServerToExternalJob < ActiveJob::Base
     # Do something later
     logger.debug "Performing MoveFromServerToExternalJob with job id = #{job_id}"
     job_progress = DelayedJobProgress.find(job_id)
-    MoveFromServerToExternalJob.process(SOURCE_PATH, TARGET_PATH, job_progress)
+    MoveFromServerToExternalJob.process(SOURCE_PATH, MOUNT_PATH, TARGET_PATH, job_progress)
   end
 
-  def self.process(source_path, target_path, job_progress)
+  def self.process(source_path, mount_path, target_path, job_progress)
     job_progress.upgrade_progress(0, I18n.t(:move_from_server_to_external_job_obtaining_info))
     files_to_move = self.obtain_files_to_move(source_path)
 
     max_progress_to_move = MoveFromServerToExternalJob.get_max_progress_to_move(files_to_move)
     processed_progress_to_move = 5
     moved_files = 0
+    self.check_external_disk(mount_path)
     logger.info("Moving #{files_to_move.length} files from internal disk to external path: #{target_path}")
     Dir.mkdir(target_path) if not File.directory? target_path
     begin
@@ -75,6 +83,11 @@ class MoveFromServerToExternalJob < ActiveJob::Base
     rescue IOError => ex
       raise StandardError.new(I18n.t(:move_from_server_to_external_full_disk) + ". " + I18n.t(:move_from_server_to_external_info_about_moved, :moved_files => moved_files, :total_files => files_to_move.length) + ". Original message: " + ex.message)
     end
+  end
+
+  def self.check_external_disk(mount_path)
+    disk = HardDiskInfo.read_from_mounted_disk(mount_path)
+    disk.ensure_exists
   end
 
   def self.obtain_files_to_move(source_path)

@@ -61,10 +61,10 @@ class FileDisk < ActiveRecord::Base
         }
         matches = where("(" + w + ") AND deleted = false").order('filename')
       else
-        matches = all
+        matches = where("deleted = false")
       end
     else
-      matches = all
+      matches = where("deleted = false")
     end
     matches.paginate :per_page => 50, :page => page
   end

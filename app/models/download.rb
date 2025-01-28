@@ -1,37 +1,26 @@
-class Download < ActiveRecord::Base
-  DOWNLOAD_UPDATE_STAT_NAME = 'download'
+class Download < ApplicationRecord
+  DOWNLOAD_UPDATE_STAT_NAME = "download"
   def self.search(search)
+    scope = all
     if search
       search = search.strip
       if not search.empty?
-        #[TODO] improve permutation likes
-        #[TODO] improve index for filename -> filename, id instead id, filename
-        w = nil
-        search.split.permutation { |p|
-          if w
-            w = w + " OR filename like '%#{p.join('%')}%'"
-          else
-            w = "filename like '%#{p.join('%')}%'"
-          end
-        }
-        matches = where(w).order('filename')
-      else
-        matches = all
+        scope = search.split.permutation.map { |p| where("filename LIKE ?",
+          "%" + p.map { |e| sanitize_sql_like(e) }.join("%") + "%")
+        }.reduce { |scope, where| scope.or(where) }
       end
-    else
-      matches = all
     end
-    matches
+    scope.order("filename")
   end
-  
-  def self.get_last_update()
+
+  def self.get_last_update
     update_stat = UpdateStat.select(:updated_at).find_by(name: DOWNLOAD_UPDATE_STAT_NAME)
     return update_stat.updated_at if update_stat
-    return nil
+    nil
   end
-  
-  def self.set_last_update()
-    update_stat = UpdateStat.find_or_create_by(name: 'download')
+
+  def self.set_last_update
+    update_stat = UpdateStat.find_or_create_by(name: DOWNLOAD_UPDATE_STAT_NAME)
     update_stat.update_count += 1
     update_stat.save()
   end

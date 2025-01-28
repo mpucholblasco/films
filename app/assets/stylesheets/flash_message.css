@@ -1,0 +1,87 @@
+.flash-message {
+  position: fixed;
+  top: 1rem;
+  width: -moz-min-content;
+  width: min-content;
+  left: 40%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  --tw-translate-x: -50%;
+  z-index: 50;
+  text-wrap: nowrap;
+  --tw-bg-opacity: 1;
+  background-color: rgb(209 213 219/var(--tw-bg-opacity, 1));
+  --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, .1), 0 4px 6px -4px rgba(0, 0, 0, .1);
+  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  padding: 1rem;
+  border-radius: .5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: flashMessage 6s forwards;
+}
+
+.flash-message-items {
+  display: flex;
+  align-items: center;
+  margin-right: 1.5rem;
+}
+
+.flash-icon {
+  height: 1.5rem;
+  width: 1.5rem;
+  margin-right: .5rem;
+}
+
+.flash-message-notice {
+  --tw-text-opacity: 1;
+  color: rgb(22 101 52/var(--tw-text-opacity, 1));
+}
+
+.flash-message-alert {
+  --tw-text-opacity: 1;
+  color: rgb(133 77 14/var(--tw-text-opacity, 1));
+}
+
+.flash-button-notice {
+  --tw-text-opacity: 1;
+  color: rgb(21 128 61/var(--tw-text-opacity, 1));
+  margin-bottom: .25rem;
+  border-style: none;
+  background-color: rgb(209 213 219/var(--tw-bg-opacity, 1));
+}
+
+.flash-button-notice:hover {
+  --tw-text-opacity: 1;
+  color: rgb(20 83 45/var(--tw-text-opacity, 1));
+  background-color: rgb(137 144 154/var(--tw-bg-opacity, 1));
+}
+
+.flash-button-alert {
+  --tw-text-opacity: 1;
+  color: rgb(161 98 7/var(--tw-text-opacity, 1));
+  margin-bottom: .25rem;
+  border-style: none;
+  background-color: rgb(209 213 219/var(--tw-bg-opacity, 1));
+}
+
+.flash-button-alert:hover {
+  --tw-text-opacity: 1;
+  color: rgb(113 63 18/var(--tw-text-opacity, 1));
+  background-color: rgb(137 144 154/var(--tw-bg-opacity, 1));
+}
+
+@keyframes flashMessage {
+  0% {
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

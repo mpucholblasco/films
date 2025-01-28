@@ -1,4 +1,4 @@
-class CreateFileDisks < ActiveRecord::Migration
+class CreateFileDisks < ActiveRecord::Migration[8.0]
   def change
     create_table :file_disks do |t|
       t.string :filename

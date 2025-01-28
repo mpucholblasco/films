@@ -5,13 +5,13 @@ class ToolsController < ApplicationController
   def find_duplicates
     logger.info "Finding duplicates"
     @duplicates = get_file_disk_duplicates
-    logger.info "Found #{@duplicates.length} duplicates"
+    logger.info "Found #{@duplicates.size} duplicates"
   end
 
   def find_series_duplicates
     logger.info "Finding series duplicated"
     @duplicates = get_series_duplicates
-    logger.info "Found #{@duplicates.length} series duplicated"
+    logger.info "Found #{@duplicates.size} series duplicated"
   end
 
   def stop_amule
@@ -40,7 +40,7 @@ class ToolsController < ApplicationController
 
   def copy_from_server_to_external_status
     job_id = params[:id]
-    job_progress = DelayedJobProgress.find(job_id)
+    job_progress = Job.find(job_id)
     @progress = job_progress.progress
     logger.debug "Obtaining progress for job_id #{job_id}"
   end
@@ -55,12 +55,12 @@ class ToolsController < ApplicationController
         if filenames_found.has_key?(basename)
         filenames_found[basename] << file_disk
         else
-          filenames_found[basename] = [file_disk]
+          filenames_found[basename] = [ file_disk ]
         end
       end
     end
 
-    filenames_found.reject!{ |k,v| v.length == 1}
+    filenames_found.reject { |k, v| v.length == 1 }
   end
 
   def get_series_duplicates
@@ -77,6 +77,6 @@ class ToolsController < ApplicationController
         series_found[serie_name] = { file_disk.disk_id => 1 } if ! serie_disk_info.has_key?(file_disk.disk_id)
       end
     end
-    series_found.reject!{ |k,v| v.length == 1}
+    series_found.reject { |k, v| v.length == 1 }
   end
 end

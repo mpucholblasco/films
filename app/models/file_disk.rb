@@ -1,15 +1,15 @@
-require 'sys/filesystem'
-include Sys
+class FileDisk < ApplicationRecord
+  @@filename_re = /^(?<filename>.+)\s\[(?<id>[^\]]+)\](\.(?<extension>[^.]+))?$/
+  @@filename_ext_re = /^(?<filename>.+)\.(?<extension>[^.]+)$/
 
-class FileDisk < ActiveRecord::Base
-  RE_FILENAME_ID = /^(?<filename>.+)\s\[(?<id>[^\]]+)\](\.(?<extension>[^.]+))?$/
-  RE_FILENAME_EXT = /^(?<filename>.+)\.(?<extension>[^.]+)$/
   belongs_to :disk
-  belongs_to :hash_file, class_name: 'HashFile', foreign_key: 'hash_id'
   attr_accessor :original_name
   before_save :fix_filename
+  paginates_per 50
+  broadcasts_refreshes
+
   def fix_filename
-    self.filename = self.filename.encode('UTF-8', :invalid => :replace, :undef => :replace)
+    self.filename = self.filename.encode("UTF-8", invalid: :replace, undef: :replace)
   end
 
   @original_name = nil
@@ -22,16 +22,16 @@ class FileDisk < ActiveRecord::Base
     file_disk.disk_id = disk_id
     file_disk.deleted = false
     file_disk.id = self.get_id_from_filename(filename)
-    return file_disk
+    file_disk
   end
 
   def self.get_id_from_filename(filename)
-    filename = filename.encode('UTF-8', :invalid => :replace, :undef => :replace)
-    filename_id_match = RE_FILENAME_ID.match(filename)
+    filename = filename.encode("UTF-8", invalid: :replace, undef: :replace)
+    filename_id_match = @@filename_re.match(filename)
     if filename_id_match
       return filename_id_match[:id].to_i(16)
     end
-    return nil
+    nil
   end
 
   def self.find_using_filename_with_id(filename)
@@ -42,42 +42,32 @@ class FileDisk < ActiveRecord::Base
       rescue ActiveRecord::RecordNotFound
       end
     end
-    return nil
+    nil
   end
 
-  def self.search(search, page)
+  def self.search(search)
+    scope = where("deleted = false")
     if search
-      search = search.strip
+      search = FileDisk.sanitize_sql_like(search.strip)
       if not search.empty?
-        #[TODO] improve permutation likes
-        #[TODO] improve index for filename -> filename, id instead id, filename
-        w = nil
-        search.split.permutation { |p|
-          if w
-            w = w + " OR filename like '%#{p.join('%')}%'"
-          else
-            w = "filename like '%#{p.join('%')}%'"
-          end
-        }
-        matches = where("(" + w + ") AND deleted = false").order('filename')
-      else
-        matches = where("deleted = false")
+        likes = search.split.permutation.map { |p| where("filename LIKE ?",
+          "%" + p.map { |e| sanitize_sql_like(e) }.join("%") + "%")
+        }.reduce { |scope, where| scope.or(where) }
+        scope = scope.and(likes)
       end
-    else
-      matches = where("deleted = false")
     end
-    matches.paginate :per_page => 50, :page => page
+    scope.order("filename")
   end
 
   def append_id_to_filename
     if not self.id.nil? and not self.filename.nil? and not self.filename.empty?
-      self.filename = self.filename.encode('UTF-8', :invalid => :replace, :undef => :replace)
+      self.filename = self.filename.encode("UTF-8", invalid: :replace, undef: :replace)
       id_in_filename = " [#{self.id.to_s(16)}]"
-      filename_id = RE_FILENAME_ID.match(self.filename)
+      filename_id = @@filename_re.match(self.filename)
       if filename_id
         new_filename = filename_id[:extension].nil? ? "#{filename_id[:filename]}#{id_in_filename}" : "#{filename_id[:filename]}#{id_in_filename}.#{filename_id[:extension]}"
       else
-        filename_extension_match = RE_FILENAME_EXT.match(self.filename)
+        filename_extension_match = @@filename_ext_re.match(self.filename)
         if filename_extension_match
           new_filename = "#{filename_extension_match[:filename]}#{id_in_filename}.#{filename_extension_match[:extension]}"
         else # has no extension -> just append the ID

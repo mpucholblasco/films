@@ -1,4 +1,4 @@
-class CreateUpdateStats < ActiveRecord::Migration
+class CreateUpdateStats < ActiveRecord::Migration[8.0]
   def change
     create_table :update_stats do |t|
       t.string :name

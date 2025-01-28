@@ -17,7 +17,7 @@
 	<% end %>
 </table>
 
-<%= will_paginate @downloads %>
+<%= paginate @downloads %>
 <% else %>
 <p><%= t(:downloads_search_not_found)%></p>
 <% end -%>

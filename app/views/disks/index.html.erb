@@ -2,6 +2,8 @@
 
 <%= link_to t(:new_disk), new_disk_path, :class => 'button' %>
 
+<%= turbo_stream_from 'disks' %>
+
 <table>
 	<tr>
 		<th><%= t(:name) %></th>
@@ -14,6 +16,7 @@
 	</tr>
 
 	<% @disks.each do |disk| %>
+	<%= turbo_stream_from disk %>
 	<tr>
 		<td><%= disk.name %></td>
 		<td><%= disk.disk_type %></td>
@@ -22,14 +25,13 @@
 		<td><%= get_human_size(disk.free_size) %></td>
 		<td><%= disk.file_disks.count %></td>
 		<td class="action"><%= link_to t(:show), disk_path(disk), :class => 'button' %></td>
-		<td class="action"><%= link_to t(:update_content), update_content_path(disk), :class => 'button' %></td>
+		<td class="action"><%= link_to t(:update_content), update_content_path(disk), data: { "turbo-method": :post}, :class => 'button' %></td>
 		<td class="action"><%= link_to t(:edit), edit_disk_path(disk), :class => 'button' %></td>
 		<td class="action"><%= link_to t(:destroy), disk_path(disk),
-		method: :delete,
-		data: { confirm: t(:question_sure) }, :class => 'button' %></td>
+		data: { "turbo-method": :delete, "turbo-confirm": t(:question_sure) }, :class => 'button' %></td>
 	</tr>
 	<% end %>
 </table>
 
 
-<%= will_paginate @disks %>
+<%= paginate @disks %>

@@ -1,6 +1,9 @@
 <h1><%= link_to t(:disks), disks_path %> / <%= @disk.name %></h1>
 
 <%= link_to 'Edit', edit_disk_path(@disk), :class => 'button' %>
+
+<%= turbo_stream_from @disk %>
+
 <p>
 	<strong><%= t(:name) %>:</strong>
 	<%= @disk.name %>
@@ -38,7 +41,7 @@
 		<th><%= t(:score) %></th>
 		<th colspan="2"><%= t(:actions) %></th>
 	</tr>
-	<% @link_to_back = URI.encode(Base64.encode64(request.path)) %>
+	<% @link_to_back = CGI.escape(Base64.encode64(request.path)) %>
 	<%= render @file_disks %>
 </table>
-<%= will_paginate @file_disks %>
+<%= paginate @file_disks %>

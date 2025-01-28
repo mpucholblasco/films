@@ -1,4 +1,6 @@
-<h1><%= @job.job_id %></h1>
+<h1><%= @job.id %></h1>
+
+<%= turbo_stream_from @job %>
 
 <p>
 	<strong><%= t(:name) %>:</strong>
@@ -8,10 +10,12 @@
 	<strong><%= t(:stage) %>:</strong>
 	<span id="progresstext"><%= @job.progress_stage %></span>
 </p>
+
 <p>
 	<strong><%= t(:progress) %>:</strong>
-	<span id="progressnumber"><%= @job.progress %></span>% <progress id="progressbar" value="0" max="100"></progress>
+	<span id="progressnumber"><%= @job.progress %></span>% <progress id="progressbar" value="<%= @job.progress %>" max="100"></progress>
 </p>
+
 <p>
 	<strong><%= t(:creation) %>:</strong>
 	<%= @job.created_at %>
@@ -20,10 +24,3 @@
 	<strong><%= t(:last_update) %>:</strong>
 	<%= @job.updated_at %>
 </p>
-<script language="javascript">
-(function() {
-  $(document).on("turbolinks:load", function() {
-		pollProgressStatus(window.location.href, window.location.href);
-  });
-}).call(this);
-</script>

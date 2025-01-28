@@ -1,8 +1,8 @@
-require 'fileutils'
+require "fileutils"
 
-class MoveFromServerToExternalJob < ActiveJob::Base
-  SOURCE_PATH = '/home/marcel/.aMule/Incoming/'
-  MOUNT_PATH = '/media/usb'
+class MoveFromServerToExternalJob < ApplicationJob
+  SOURCE_PATH = "/home/marcel/.aMule/Incoming/"
+  MOUNT_PATH = "/media/usb"
   TARGET_PATH = "#{MOUNT_PATH}/procesar/"
   queue_as :copy_from_server_to_external
 
@@ -11,17 +11,17 @@ class MoveFromServerToExternalJob < ActiveJob::Base
   end
 
   before_enqueue do |job|
-    logger.debug "Initializing delayed MoveFromServerToExternalJob progress with job: #{job.inspect}"
-    job_progress = DelayedJobProgress.new
+    logger.debug "Initializing job MoveFromServerToExternalJob progress with job: #{job.inspect}"
+    job_progress = Job.new
     job_progress.description = I18n.t(:move_from_server_to_external_job_description)
-    job_progress.job_id = job.job_id
+    job_progress.id = job.job_id
     job_progress.progress_max = 100
     job_progress.save()
   end
 
   after_perform do |job|
     logger.info "MoveFromServerToExternalJob #{job_id} finished correctly"
-    job_progress = DelayedJobProgress.find(job_id)
+    job_progress = Job.find(job_id)
     job_progress.upgrade_progress(100, I18n.t(:update_content_finish))
     job_progress.finish_correctly
     system("sync")
@@ -29,16 +29,15 @@ class MoveFromServerToExternalJob < ActiveJob::Base
 
   rescue_from(StandardError) do |exception|
     logger.info "MoveFromServerToExternalJob #{job_id} raised exception: #{exception.inspect}"
-    job_progress = DelayedJobProgress.find(job_id)
+    job_progress = Job.find(job_id)
     job_progress.upgrade_progress(100, "Error")
     job_progress.finish_with_errors(exception.message)
     system("sync")
   end
 
   def perform(*args)
-    # Do something later
     logger.debug "Performing MoveFromServerToExternalJob with job id = #{job_id}"
-    job_progress = DelayedJobProgress.find(job_id)
+    job_progress = Job.find(job_id)
     MoveFromServerToExternalJob.process(SOURCE_PATH, MOUNT_PATH, TARGET_PATH, job_progress)
   end
 
@@ -58,7 +57,7 @@ class MoveFromServerToExternalJob < ActiveJob::Base
         basename = File.basename(file)
         logger.info("Gonna process basename #{basename}")
         logger.info("max_progress_to_move = #{max_progress_to_move}, processed_progress_to_move = #{processed_progress_to_move}, moved_files = #{moved_files}")
-        job_progress.upgrade_progress(5 + (processed_progress_to_move * 95 / max_progress_to_move).floor, I18n.t(:move_from_server_to_external_job_moving_file, :filename => basename) + ". " + I18n.t(:move_from_server_to_external_info_about_moved, :moved_files => moved_files, :total_files => files_to_move.length))
+        job_progress.upgrade_progress(5 + (processed_progress_to_move * 95 / max_progress_to_move).floor, I18n.t(:move_from_server_to_external_job_moving_file, filename: basename) + ". " + I18n.t(:move_from_server_to_external_info_about_moved, moved_files: moved_files, total_files: files_to_move.length))
         target_filename = File.join(target_path, basename)
         processed_progress_to_move = processed_progress_to_move + File.stat(file).blocks
         begin
@@ -75,7 +74,7 @@ class MoveFromServerToExternalJob < ActiveJob::Base
         moved_files = moved_files + 1
       end
     rescue IOError, Errno::ENOSPC => ex
-      raise StandardError.new(I18n.t(:move_from_server_to_external_full_disk) + ". " + I18n.t(:move_from_server_to_external_info_about_moved, :moved_files => moved_files, :total_files => files_to_move.length) + ". Original message: " + ex.message)
+      raise StandardError.new(I18n.t(:move_from_server_to_external_full_disk) + ". " + I18n.t(:move_from_server_to_external_info_about_moved, moved_files: moved_files, total_files: files_to_move.length) + ". Original message: " + ex.message)
     end
   end
 
@@ -91,7 +90,7 @@ class MoveFromServerToExternalJob < ActiveJob::Base
   end
 
   def self.obtain_files_to_move(source_path)
-    Dir.glob(File.join(source_path, '*')).select{ |e| File.file? e }.sort
+    Dir.glob(File.join(source_path, "*")).select { |e| File.file? e }.sort
   end
 
   def self.get_max_progress_to_move(files)

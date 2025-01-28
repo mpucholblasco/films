@@ -6,6 +6,10 @@ es:
   move_from_server_to_external_full_disk: "Disco lleno"
   move_from_server_to_external_no_external_disk: "Disco externo no detectado"
   move_from_server_to_external_info_about_moved: "Movidos %{moved_files} de %{total_files} ficheros"
+  job_cancel_error_only_unfished: "Sólo se pueden cancelar trabajos no finalizados"
+  job_destroy_error_only_finished: "Sólo se pueden eliminar trabajos ya finalizados.\nPuede cancelar un trabajo para finalizarlo."
+  job_canceled_properly: "Trabajo cancelado correctamente"
+  job_deleted_properly: "Trabajo eliminado correctamente"
 
   # Disks
   disks: "Discos"
@@ -21,6 +25,7 @@ es:
   update_content_finish: "Proceso finalizado correctamente."
   update_content_cancelled: "Proceso cancelado"
   update_content_error: "Error: %{message}"
+  disk_deleted_properly: "Disco eliminado correctamente"
 
   # Update error messages
   update_error_disk_not_inserted: "Disco no encontrado"
@@ -34,18 +39,20 @@ es:
   files: "Ficheros"
   filename: "Nombre del fichero"
   total_files: "Total ficheros"
-  size_mb: "Tamaño en MB"
   add_new_file: "Agregar un nuevo fichero"
   search_file: "Buscar fichero"
   number_files: "Número de ficheros"
   files_search_not_found: "No se han encontrado ficheros que cumplan con los requisitos."
-  score: "Puntuación"
   hash_files: "Hash"
   hash_info: "Información"
   file_disk_error: "Error en campo de fichero"
 
   # Jobs
   jobs: "Trabajos"
+
+  # Films
+  films: "Películas"
+  films_welcome: "Bienvenido a la aplicación de gestión de películas"
 
   # Downloads
   downloads: "Descargas"
@@ -65,6 +72,8 @@ es:
   starting_progress: "Inicializando proceso"
   progress: "Progreso"
   stage: "Fase"
+  not_found: "No encontrado"
+  unknown_error: "Error desconocido"
 
   # Actions
   show: "Mostrar"
@@ -91,9 +100,10 @@ es:
   start_amule: "Iniciar amule"
   start_amule_description: "Inicia el servidor de amule."
   copy_from_server_to_external: "Copiar ficheros del servidor a disco externo"
-  copy_from_server_to_external_description: "Copia los ficheros que se hayan descargado del amule y los copia en la carpeta procesar del disco externo insertado"
+  copy_from_server_to_external_description: "Crea un trabajo para copiar los ficheros que se hayan descargado del amule y los copia en la carpeta procesar del disco externo insertado"
 
   # Pagination
+  # TODO: review pagination translations
   will_paginate:
     previous_label: "Anterior"
     next_label: "Siguiente"
@@ -158,3 +168,29 @@ es:
       long: ! '%d de %B de %Y %H:%M:%S'
       short: ! '%d de %b %H:%M:%S'
       simple: ! '%H:%M:%S %d/%m/%Y'
+
+  activerecord:
+    models:
+      disk: "Disco"
+    attributes:
+      disk:
+        name: "Nombre: "
+        type: "Tipo: "
+        last_update: "Última actualización: "
+        total_size: "Tamaño total: "
+        free_size: "Espacio libre: "
+      file_disk:
+        filename: "Nombre del fichero: "
+        size_mb: "Tamaño en MB: "
+        score: "Puntuación: "
+  
+
+  helpers:
+    submit:
+      create: "Crear %{model}"
+      update: "Confirmar cambios a %{model}"
+
+  errors:
+    messages:
+      blank: "No se puede dejar el campo vacío"
+

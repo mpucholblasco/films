@@ -1,26 +1,13 @@
 <%= form_for @disk do |f| %>
 
-<% if @disk and @disk.errors.any? %>
-<div id="error_explanation">
-	<h2> <%= pluralize(@disk.errors.count, "error") %> <%= t(:disk_prohibited_error) %>: </h2>
-	<ul>
-		<% @disk.errors.full_messages.each do |msg| %>
-		<li>
-			<%= msg %>
-		</li>
-		<% end %>
-	</ul>
-</div>
-<% end %>
-
 <p>
-	<%= f.label t(:name) %>
+	<%= f.label :name %>
 	<br>
 	<%= f.text_field :name %>
 </p>
 
 <p>
-	<%= f.label t(:type) %>
+	<%= f.label :type %>
 	<br>
 	<%= f.select(:disk_type) do %>
 		<% Disk.disk_types.keys.each do |d| -%>
@@ -30,7 +17,7 @@
 </p>
 
 <p>
-	<%= f.label t(:last_update) %>
+	<%= f.label :last_update %>
 	<br>
 	<% if @disk.last_sync %>
 		<%= l(@disk.last_sync) %>
@@ -40,13 +27,13 @@
 </p>
 
 <p>
-  <%= f.label t(:total_size) %>
+  <%= f.label :total_size %>
   <br>
   <%= f.text_field :total_size %>
 </p>
 
 <p>
-  <%= f.label t(:free_size) %>
+  <%= f.label :free_size %>
   <br>
   <%= f.text_field :free_size %>
 </p>

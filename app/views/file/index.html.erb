@@ -40,7 +40,7 @@
 		<th><%= t(:disk) %></th>
 		<th><%= t(:actions) %></th>
 	</tr>
-	<% @link_to_back = URI.encode(Base64.encode64(request.fullpath)) %>
+	<% @link_to_back = CGI.escape(Base64.encode64(request.fullpath)) %>
 	<% @files.each do |file| %>
 	<tr>
 		<td><%= file.filename %></td>
@@ -48,13 +48,12 @@
 		<td><%= file.score %></td>
 		<td><%= link_to file.disk.name, disk_path(file.disk), :class => 'ref' %></td>
 		<td class="action"><%= link_to t(:destroy), [file.disk, file],
-		method: :delete,
-		data: { confirm: t(:question_sure) }, :class => 'button' %></td>
+		data: { "turbo-method": :delete, "turbo-confirm": t(:question_sure) }, :class => 'button' %></td>
 
 		<td class="action"><%= link_to(t(:edit), edit_disk_file_disk_path(:id => file.id, :disk_id => file.disk_id, :link_to_back => @link_to_back), :class => 'button') %></td>
 	</tr>
 	<% end %>
 </table>
 
-<%= will_paginate @files %>
+<%= paginate @files %>
 <% end -%>

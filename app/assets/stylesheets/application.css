@@ -1,0 +1,211 @@
+/*
+ * This is a manifest file that'll be compiled into application.css.
+ *
+ * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
+ * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
+ * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
+ * depending on specificity.
+ *
+ * Consider organizing styles into separate files for maintainability.
+ */
+nav a {
+  display: block;
+  padding: 2px;
+  text-decoration: blink;
+  color: black;
+}
+
+nav a.active {
+  color: white;
+  background-color: rgb(0, 0, 155);
+  border-radius: 3px;
+}
+
+nav a:hover:not(.active) {
+  background-color: blue;
+  text-shadow: 2px 2px black;
+  color: white;
+  border-radius: 3px;
+}
+
+nav {
+  border-radius: 10px;
+  font-family: arial, sans-serif;
+  border: 1px solid #ccc;
+  padding: 10px;
+  float: left;
+  width: max-content;
+}
+
+div.body {
+  float: left;
+  padding: 0px 10px;
+  font-family: arial, sans-serif;
+  width: fit-content;
+}
+
+h1,
+h2 {
+  color: blue;
+}
+
+h1,
+h2 a {
+  text-decoration: blink;
+}
+
+a.ref {
+  text-decoration: blink;
+  color: blue;
+}
+
+/* Tables */
+table {
+  border-radius: 5px;
+  margin-top: 5px;
+  width: 100%;
+}
+
+table,
+th,
+td {
+  border: 1px solid blue;
+}
+
+th {
+  background-color: blue;
+  color: white;
+  padding: 5px;
+  text-align: left;
+}
+
+td {
+  padding: 3px;
+}
+
+td.action {
+  white-space: nowrap;
+  width: 1px;
+}
+
+tr:nth-child(odd) {
+  background-color: blue + 220;
+}
+
+tr:hover {
+  background-color: rgb(192, 192, 254);
+}
+
+td.action {
+  border: none;
+  background-color: white;
+}
+
+a.button {
+  font-size: small;
+  color: white;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  vertical-align: middle;
+  text-align: center;
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  text-decoration: blink;
+  -webkit-appearance: button;
+  box-sizing: border-box;
+  background-color: blue;
+}
+
+a.button:hover {
+  background-color: rgb(127, 127, 242);
+  text-shadow: 2px 2px black;
+  color: white;
+}
+
+.pagination {
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.pagination a {
+  font-size: small;
+  color: white;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  vertical-align: middle;
+  text-align: center;
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  text-decoration: blink;
+  -webkit-appearance: button;
+  box-sizing: border-box;
+  background-color: blue;
+}
+
+.pagination a:hover {
+  background-color: rgb(101, 101, 185);
+  text-shadow: 2px 2px black;
+  color: white;
+}
+
+.previous_page.disabled,
+.next_page.disabled {
+  font-size: small;
+  color: white;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  vertical-align: middle;
+  text-align: center;
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  text-decoration: blink;
+  -webkit-appearance: button;
+  box-sizing: border-box;
+  background-color: gray;
+}
+
+.button {
+  font-size: small;
+  color: white;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  vertical-align: middle;
+  text-align: center;
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  text-decoration: blink;
+  -webkit-appearance: button;
+  box-sizing: border-box;
+  background-color: blue;
+}
+
+input.button:hover {
+  background-color: rgb(192, 192, 254);
+  text-shadow: 2px 2px black;
+  color: white;
+}
+
+label {
+  font-weight: bold;
+}

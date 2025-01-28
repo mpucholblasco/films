@@ -1,10 +1,10 @@
-require 'base64'
-require 'uri'
+require "base64"
+require "uri"
 
 class FileDisksController < ApplicationController
   def show
     @disk = Disk.find(params[:disk_id])
-    @file_disk = @disk.file_disks.find(params[:id])
+    @file_disk = @disk.file_disks.find(params[:id]).page params[:page]
   end
 
   def create
@@ -31,9 +31,18 @@ class FileDisksController < ApplicationController
     logger.debug "Editing file disk: #{@file_disk.attributes.inspect}"
 
     if @file_disk.update(file_disk_params)
-      redirect_to (params[:link_to_back].nil? or params[:link_to_back].empty?) ? [@disk, @file_disk] : Base64.decode64(URI.decode(params[:link_to_back]))
+      redirect_to (params[:link_to_back].nil? or params[:link_to_back].empty?) ? [ @disk, @file_disk ] : Base64.decode64(CGI.unescape(params[:link_to_back]))
     else
-      render 'edit'
+      respond_to do |format|
+        format.turbo_stream {
+          @file_disk.errors.full_messages.each do |e|
+            flash.now[:alert] = e
+          end
+
+          render turbo_stream: turbo_stream.replace("flash",
+            partial: "shared/flash")
+        }
+      end
     end
   end
 

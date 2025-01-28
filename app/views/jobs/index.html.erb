@@ -1,4 +1,7 @@
 <h1><%= t(:jobs) %></h1>
+
+<%= turbo_stream_from 'jobs' %>
+
 <table>
   <tr>
     <th><%= t(:name) %></th>
@@ -6,9 +9,10 @@
     <th><%= t(:progress) %></th>
     <th><%= t(:creation) %></th>
     <th><%= t(:last_update) %></th>
-    <th><%= t(:actions) %></th>
+    <th colspan="3"><%= t(:actions) %></th>
   </tr>
   <% @jobs.each do |job| %>
+  <%= turbo_stream_from job %>
 	<tr>
 		<td><%= job.description %></td>
     <td><%= job.progress_stage %></td>
@@ -17,12 +21,10 @@
     <td><%= job.updated_at %></td>
     <td class="action"><%= link_to t(:show), job_path(job), :class => 'button' %></td>
     <td class="action"><%= link_to t(:cancel), job_path(job, :task => 'cancel' ),
-    method: :put,
-    data: { confirm: t(:question_sure) }, :class => 'button' %></td>
+    data: { "turbo-method": :put, "turbo-confirm": t(:question_sure) }, :class => 'button' %></td>
     <td class="action"><%= link_to t(:destroy), job_path(job),
-		method: :delete,
-		data: { confirm: t(:question_sure) }, :class => 'button' %></td>
+		data: { "turbo-method": :delete, "turbo-confirm": t(:question_sure) }, :class => 'button' %></td>
 	</tr>
 	<% end %>
 </table>
-<%= will_paginate @jobs %>
+<%= paginate @jobs %>

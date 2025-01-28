@@ -1,86 +1,73 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# Note that this schema.rb definition is the authoritative source for your
-# database schema. If you need to create the application database on another
-# system, you should be using db:schema:load, not running all the migrations
-# from scratch. The latter is a flawed and unsustainable approach (the more migrations
-# you'll amass, the slower it'll run and the greater likelihood for issues).
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
+# be faster and is potentially less error prone than running all of your
+# migrations from scratch. Old migrations may fail to apply correctly if those
+# migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171124165828) do
+ActiveRecord::Schema[8.0].define(version: 2016_12_28_111227) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
 
-  create_table "delayed_job_progresses", primary_key: "job_id", force: :cascade do |t|
-    t.integer  "progress_max",   limit: 4,     null: false
-    t.integer  "progress",       limit: 4,     null: false
-    t.string   "progress_stage", limit: 255
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
-    t.integer  "finish_status",  limit: 4
-    t.text     "error_message",  limit: 65535
-    t.string   "description",    limit: 255
-  end
-
-  create_table "delayed_jobs", force: :cascade do |t|
-    t.integer  "priority",   limit: 4,     default: 0, null: false
-    t.integer  "attempts",   limit: 4,     default: 0, null: false
-    t.text     "handler",    limit: 65535,             null: false
-    t.text     "last_error", limit: 65535
-    t.datetime "run_at"
-    t.datetime "locked_at"
-    t.datetime "failed_at"
-    t.string   "locked_by",  limit: 255
-    t.string   "queue",      limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
+  # Custom types defined in this database.
+  # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "disk_type", ["HD", "DVD", "CD"]
+  create_enum "job_finish_status", ["UNFINISHED", "FINISHED_WITH_ERRORS", "FINISHED_CORRECTLY", "CANCELLED"]
 
   create_table "disks", force: :cascade do |t|
-    t.string   "name",       limit: 255
-    t.integer  "disk_type",  limit: 4
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.string "name"
+    t.enum "disk_type", enum_type: "disk_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.datetime "last_sync"
-    t.integer  "total_size", limit: 8
-    t.integer  "free_size",  limit: 8
+    t.bigint "total_size"
+    t.bigint "free_size"
+    t.index ["name"], name: "index_disks_on_name", unique: true
   end
 
-  add_index "disks", ["name"], name: "index_disks_on_name", unique: true, using: :btree
-
   create_table "downloads", force: :cascade do |t|
-    t.string   "filename",   limit: 255
-    t.float    "percentage", limit: 24
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.string "filename"
+    t.float "percentage"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "file_disks", force: :cascade do |t|
-    t.string   "filename",   limit: 255
-    t.integer  "size_mb",    limit: 4
-    t.integer  "disk_id",    limit: 4
-    t.datetime "created_at",                                                     null: false
-    t.datetime "updated_at",                                                     null: false
-    t.decimal  "score",                  precision: 5, scale: 2
-    t.boolean  "deleted",    limit: 1,                           default: false, null: false
+    t.string "filename"
+    t.integer "size_mb"
+    t.bigint "disk_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "score", precision: 5, scale: 2
+    t.boolean "deleted", default: false, null: false
+    t.index ["deleted"], name: "index_file_disks_on_deleted"
+    t.index ["disk_id", "filename"], name: "index_file_disks_on_disk_id_and_filename", unique: true
+    t.index ["disk_id"], name: "index_file_disks_on_disk_id"
   end
 
-  add_index "file_disks", ["deleted"], name: "index_file_disks_on_deleted", using: :btree
-  add_index "file_disks", ["disk_id", "filename"], name: "index_file_disks_on_disk_id_and_filename", unique: true, using: :btree
-  add_index "file_disks", ["disk_id"], name: "index_file_disks_on_disk_id", using: :btree
+  create_table "jobs", id: :string, force: :cascade do |t|
+    t.integer "progress_max", default: 100, null: false
+    t.integer "progress", default: 0, null: false
+    t.string "progress_stage"
+    t.enum "finish_status", default: "UNFINISHED", null: false, enum_type: "job_finish_status"
+    t.text "error_message"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "update_stats", force: :cascade do |t|
-    t.string   "name",         limit: 255
-    t.integer  "update_count", limit: 4
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.string "name"
+    t.integer "update_count"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_update_stats_on_name", unique: true
   end
-
-  add_index "update_stats", ["name"], name: "index_update_stats_on_name", unique: true, using: :btree
 
   add_foreign_key "file_disks", "disks"
 end

@@ -1,0 +1,10 @@
+default: &default
+  update_downloads:
+    class: UpdateDownloadsJob
+    schedule: "*/5 * * * *"
+
+development:
+  <<: *default
+
+production:
+  <<: *default

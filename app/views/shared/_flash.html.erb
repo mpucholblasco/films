@@ -1,0 +1,23 @@
+<div id="flash">
+  <% flash.each do |type, message| %>
+    <div class="flash-message" role="alert" data-controller="flash" data-action="animationend->flash#remove">
+      <div class="flash-message-items">
+        <% if type == 'notice' %>
+          <svg class="flash-icon flash-message-notice" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        <% else %>
+          <svg class="flash-icon flash-message-alerts" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        <% end %>
+        <p class="<%= type == 'notice' ? 'flash-message-notice' : 'flash-message-alert' %>"><%= message %></p>
+      </div>
+      <button
+        data-action="flash#remove"
+        class="<%= type == 'notice' ? 'flash-button-notice' : 'flash-button-alert' %>">
+        <span class="text-2xl">&times;</span>
+      </button>
+    </div>
+  <% end %>
+</div>

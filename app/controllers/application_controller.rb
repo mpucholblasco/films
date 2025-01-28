@@ -15,8 +15,8 @@ class ApplicationController < ActionController::Base
   private
 
   def set_correct_locale
-    if request.env['HTTP_ACCEPT_LANGUAGE']
-      request.env['HTTP_ACCEPT_LANGUAGE'].scan(/[a-z]{2}/).uniq.each do |locale|
+    if request.env["HTTP_ACCEPT_LANGUAGE"]
+      request.env["HTTP_ACCEPT_LANGUAGE"].scan(/[a-z]{2}/).uniq.each do |locale|
         logger.debug "Testing locale #{locale}"
         begin
           I18n.locale = locale

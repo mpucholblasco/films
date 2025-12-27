@@ -5,7 +5,7 @@ class Download < ApplicationRecord
     if search
       search = search.strip
       if not search.empty?
-        scope = search.split.permutation.map { |p| where("filename LIKE ?",
+        scope = search.split.permutation.map { |p| where("filename ILIKE ?",
           "%" + p.map { |e| sanitize_sql_like(e) }.join("%") + "%")
         }.reduce { |scope, where| scope.or(where) }
       end

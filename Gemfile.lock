@@ -153,16 +153,6 @@ GEM
     marcel (1.0.4)
     mini_mime (1.1.5)
     minitest (5.25.4)
-    mission_control-jobs (1.0.1)
-      actioncable (>= 7.1)
-      actionpack (>= 7.1)
-      activejob (>= 7.1)
-      activerecord (>= 7.1)
-      importmap-rails (>= 1.2.1)
-      irb (~> 1.13)
-      railties (>= 7.1)
-      stimulus-rails
-      turbo-rails
     msgpack (1.7.5)
     net-imap (0.5.4)
       date
@@ -247,6 +237,8 @@ GEM
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
     rake (13.2.1)
+    rbs (3.10.0)
+      logger
     rdoc (6.10.0)
       psych (>= 4.0.0)
     regexp_parser (2.9.3)
@@ -358,11 +350,11 @@ DEPENDENCIES
   jbuilder
   kamal
   kaminari (~> 1.2.2)
-  mission_control-jobs
   pg (~> 1.5.9)
   propshaft
   puma (>= 5.0)
   rails (~> 8.0.1)
+  rbs
   rubocop-rails-omakase
   solid_cable (~> 3.0)
   solid_cache (~> 1.0)

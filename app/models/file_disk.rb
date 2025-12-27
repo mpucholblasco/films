@@ -50,7 +50,7 @@ class FileDisk < ApplicationRecord
     if search
       search = FileDisk.sanitize_sql_like(search.strip)
       if not search.empty?
-        likes = search.split.permutation.map { |p| where("filename LIKE ?",
+        likes = search.split.permutation.map { |p| where("filename ILIKE ?",
           "%" + p.map { |e| sanitize_sql_like(e) }.join("%") + "%")
         }.reduce { |scope, where| scope.or(where) }
         scope = scope.and(likes)

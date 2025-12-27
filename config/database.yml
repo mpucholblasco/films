@@ -11,21 +11,25 @@ development:
     <<: *default
     database: films_development
     password: password
+    host: db
   cable:
     <<: *default
     database: films_development_cable
     password: password
     migrations_paths: db/cable_migrate
+    host: db
   cache:
     <<: *default
     database: films_development_cache
     password: password
     migrations_paths: db/cache_migrate
+    host: db
   queue:
     <<: *default
     database: films_development_queue
     password: password
     migrations_paths: db/queue_migrate
+    host: db
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".

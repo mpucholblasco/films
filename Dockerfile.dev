@@ -1,0 +1,9 @@
+ARG RUBY_VERSION=3.3.10
+FROM ghcr.io/rails/devcontainer/images/ruby:$RUBY_VERSION
+
+# Install base packages
+RUN sudo apt-get update -qq && \
+    sudo apt-get install --no-install-recommends -y curl libjemalloc2 libpq-dev
+
+# Set the default shell to bash or zsh for a better terminal experience
+ENV SHELL=/bin/zsh

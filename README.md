@@ -68,7 +68,26 @@ To configure usbmount, edit file `/etc/usbmount/usbmount.conf` and set the follo
 
 Ensure to remove `sync` from usbmount option.
 
-## Generating tests
+## Developing
+
+### In container
+You need VS Code extension `Remote development`.
+
+Then, use CMD+SHIFT+P and select `Dev Containers: Open Folder in Container...`.
+
+After it, open a new terminal and execute:
+```bash
+bundle exec rails db:migrate
+```
+
+If you want to run the server in the container:
+```bash
+bundle exec rails s
+```
+
+You can access to the application via http://127.0.0.1:3000/.
+
+### Generating tests
 
 See [https://www.webascender.com/Blog/ID/566/Testing-Rails-4-Apps-With-RSpec-3-Part-I#.WGePRrYrK9s](https://www.webascender.com/Blog/ID/566/Testing-Rails-4-Apps-With-RSpec-3-Part-I#.WGePRrYrK9s).
 

@@ -31,7 +31,4 @@ Rails.application.routes.draw do
   resources :disks do
     resources :file_disks
   end
-
-  # Tools
-  mount MissionControl::Jobs::Engine, at: "/jobsui"
 end

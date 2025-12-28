@@ -101,7 +101,7 @@ module DisksHelper
       @name = name
 
       # Obtain disk space
-      stat_info = SyS::Filesystem.stat(filesystem_path)
+      stat_info = Sys::Filesystem.stat(filesystem_path)
       @total_size = stat_info.block_size * stat_info.blocks
       @free_size = stat_info.block_size * stat_info.blocks_free
     end

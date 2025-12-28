@@ -79,11 +79,7 @@ module DisksHelper
         return self.read_from_old_file(filename)
       end
 
-      stat_info = Filesystem.stat(filename)
-      total_size = stat_info.block_size * stat_info.blocks
-      free_size = stat_info.block_size * stat_info.blocks_free
-
-      HardDiskInfo.new(disk_info["id"], disk_info["name"], total_size, free_size)
+      HardDiskInfo.new(disk_info["id"], disk_info["name"], filename)
     end
 
     def self.read_from_old_file(filename)
@@ -95,21 +91,19 @@ module DisksHelper
       line1_match = /ID Disco:\s*(\d+)/.match(content_lines[0])
       raise SyntaxError.new("Incorrect info file format") if not line1_match
 
-      # Obtain disk space
-      stat_info = Filesystem.stat(filename)
-      total_size = stat_info.block_size * stat_info.blocks
-      free_size = stat_info.block_size * stat_info.blocks_free
-
-      HardDiskInfo.new(line1_match[1].to_i, content_lines[1].strip(), total_size, free_size)
+      HardDiskInfo.new(line1_match[1].to_i, content_lines[1].strip(), filename)
     end
 
     attr_reader :id, :name, :total_size, :free_size
 
-    def initialize(id, name, total_size, free_size)
+    def initialize(id, name, filesystem_path)
       @id = id
       @name = name
-      @total_size = total_size
-      @free_size = free_size
+
+      # Obtain disk space
+      stat_info = SyS::Filesystem.stat(filesystem_path)
+      @total_size = stat_info.block_size * stat_info.blocks
+      @free_size = stat_info.block_size * stat_info.blocks_free
     end
 
     def store_on_mounted_disk(mount)

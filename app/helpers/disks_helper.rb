@@ -118,7 +118,7 @@ module DisksHelper
 
     def ensure_exists
       other_disk = Disk.find(@id)
-      raise Exception.new(I18n.t(:update_error_disk_not_in_db)) if name != other_disk.name or disk_type != other_disk.disk_type
+      raise Exception.new(I18n.t(:update_error_disk_not_in_db)) if name != other_disk.name
     end
   end
 end

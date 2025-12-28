@@ -38,7 +38,7 @@ class UpdateDiskInformationJob < ApplicationJob
 
   def self.process(mount, disk_id, job_progress)
     disk = nil
-    errors = ""
+    errors = []
     begin
       mount = File.realpath(mount)
     rescue Exception
@@ -70,9 +70,9 @@ class UpdateDiskInformationJob < ApplicationJob
       end
     end
 
-    self.remove_files hard_disk_files_updater_info.get_files_to_remove, job_progress
-    self.add_files mount, hard_disk_files_updater_info.get_files_to_add, job_progress
-    self.update_files mount, hard_disk_files_updater_info.get_files_to_update, job_progress
+    self.remove_files(hard_disk_files_updater_info.get_files_to_remove, job_progress)
+    errors << self.add_files(mount, hard_disk_files_updater_info.get_files_to_add, job_progress)
+    errors << self.update_files(mount, hard_disk_files_updater_info.get_files_to_update, job_progress)
 
     disk_db = Disk.find(disk.id)
     disk_db.last_sync = Time.zone.now
@@ -85,7 +85,7 @@ class UpdateDiskInformationJob < ApplicationJob
     `umount #{DISK_MOUNT_PATH}`
 
     if not errors.empty?
-      raise StandardError.new(errors)
+      raise StandardError.new(errors.join("\n"))
     end
   end
 
@@ -106,6 +106,7 @@ class UpdateDiskInformationJob < ApplicationJob
     job_progress.upgrade_progress(10, I18n.t(:update_content_adding_files, files_number: files_to_add.length))
     Rails.logger.info "Going to add <#{files_to_add.length}>"
     added_files = 0
+    errors = []
     files_to_add.each do |file|
       begin
         FileDisk.transaction do
@@ -125,12 +126,14 @@ class UpdateDiskInformationJob < ApplicationJob
         Rails.logger.debug "Error adding file #{file.inspect}. Reason: #{ex}"
       end
     end
+    errors
   end
 
   def self.update_files(mount, files_to_update, job_progress)
     job_progress.upgrade_progress(55, I18n.t(:update_content_updating_files, files_number: files_to_update.length))
     Rails.logger.info "Going to update <#{files_to_update.length}>"
     updated_files = 0
+    errors = []
     files_to_update.each do |file|
       begin
         FileDisk.transaction do
@@ -149,5 +152,6 @@ class UpdateDiskInformationJob < ApplicationJob
         Rails.logger.debug "Error updating file #{file.inspect}. Reason: #{ex}"
       end
     end
+    errors
   end
 end

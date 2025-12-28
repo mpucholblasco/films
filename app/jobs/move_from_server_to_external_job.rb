@@ -69,7 +69,7 @@ class MoveFromServerToExternalJob < ApplicationJob
           logger.info("After moving file #{file} to #{target_filename}")
         rescue StandardError => e
           logger.info("Exception raised on file #{file}, with exception class '#{e.class}', message '#{e.message}' and backtrace #{e.backtrace}")
-          File.unlink target_filename if File.exists?(target_filename)
+          File.unlink target_filename if File.exist?(target_filename)
 
           # Ignore the following errors: invalid argument (can not find origin file)
           raise e if not e.is_a? Errno::EINVAL

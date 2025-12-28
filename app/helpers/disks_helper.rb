@@ -71,7 +71,7 @@ module DisksHelper
     end
 
     def self.read_from_yaml(filename)
-      raise IOError.new("File <#{filename}> not found") if not File.exists?(filename)
+      raise IOError.new("File <#{filename}> not found") if not File.exist?(filename)
 
       begin
         disk_info = YAML.load_file filename
@@ -91,7 +91,7 @@ module DisksHelper
     end
 
     def self.read_from_old_file(filename)
-      raise IOError.new("File <#{filename}> not found") if not File.exists?(filename)
+      raise IOError.new("File <#{filename}> not found") if not File.exist?(filename)
       content = File.open(filename).read
       content.gsub!(/\r\n?/, "\n")
       content_lines = content.lines

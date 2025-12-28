@@ -45,6 +45,8 @@ class UpdateDiskInformationJob < ApplicationJob
       raise StandardError.new(I18n.t(:update_error_disk_not_inserted))
     end
 
+    `mount #{DISK_MOUNT_PATH}`
+
     begin
       disk = HardDiskInfo.read_from_mounted_disk(mount)
       disk.ensure_exists
@@ -79,7 +81,8 @@ class UpdateDiskInformationJob < ApplicationJob
     disk_db.save()
 
     # Found problems with external drives and file renaming, trying with a sync
-    system("sync")
+    `sync`
+    `umount #{DISK_MOUNT_PATH}`
 
     if not errors.empty?
       raise StandardError.new(errors)

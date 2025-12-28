@@ -24,7 +24,8 @@ class MoveFromServerToExternalJob < ApplicationJob
     job_progress = Job.find(job_id)
     job_progress.upgrade_progress(100, I18n.t(:update_content_finish))
     job_progress.finish_correctly
-    system("sync")
+    `sync`
+    `umount #{MOUNT_PATH}`
   end
 
   rescue_from(StandardError) do |exception|
@@ -32,11 +33,13 @@ class MoveFromServerToExternalJob < ApplicationJob
     job_progress = Job.find(job_id)
     job_progress.upgrade_progress(100, "Error")
     job_progress.finish_with_errors(exception.message)
-    system("sync")
+    `sync`
+    `umount #{MOUNT_PATH}`
   end
 
   def perform(*args)
     logger.debug "Performing MoveFromServerToExternalJob with job id = #{job_id}"
+    `mount #{MOUNT_PATH}`
     job_progress = Job.find(job_id)
     MoveFromServerToExternalJob.process(SOURCE_PATH, MOUNT_PATH, TARGET_PATH, job_progress)
   end

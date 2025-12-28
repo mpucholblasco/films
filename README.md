@@ -8,7 +8,7 @@ This app will help you to keep all your films organized.
 
 * crontab -e
 
-```bash
+```crontab
 */5 * * * * cd /usr/share/films && /usr/bin/rake RAILS_ENV=production films:update_disk[/home/marcel/.aMule/Incoming] > /dev/null 2>&1
 ```
 
@@ -16,7 +16,7 @@ This app will help you to keep all your films organized.
 
 Generate file `/etc/logrotate.d/films` with content:
 
-```bash
+```
 /usr/share/films/log/*.log {
   daily
   missingok
@@ -36,7 +36,7 @@ Service for delayed jobs:
 1. Edit file `/etc/systemd/system/films_delayed_job.service` and set this
    content:
 
-```bash
+```ini
 [Unit]
 Description=Films delayed jobs
 Requires=mysql.service
@@ -59,14 +59,21 @@ sudo setfacl --default -m u::rwx,u:www-data:rwx /home/marcel/myfolder/
 
 ## Copying files to external
 
-To copy files to an external USB, you need to have installed usbmount via:
-`sudo apt-get install usbmount`
+Allow user to mount `/media/usb`:
+```bash
+addgroup ntfsuser
+chown root:ntfsuser $(which ntfs-3g)
+chown root:ntfsuser /media/usb/
+chmod g+w /media/usb
+chmod 4750 $(which ntfs-3g)
+usermod -aG ntfsuser www-data
+usermod -aG disk www-data
+```
 
-To configure usbmount, edit file `/etc/usbmount/usbmount.conf` and set the following variable value:
-`MOUNTOPTIONS="async,noexec,nodev,noatime,nodiratime,user,umask=0000"`
-`FS_MOUNTOPTIONS="-fstype=vfat,gid=www-data,dmask=0002,fmask=0113,utf8"`
-
-Ensure to remove `sync` from usbmount option.
+Edit `/etc/fstab` and add:
+```
+/dev/sdb1	/media/usb	ntfs-3g	defaults,gid=1001,user,noauto,rw	0	0
+```
 
 ## Developing
 
@@ -87,10 +94,7 @@ bundle exec rails s
 
 You can access to the application via http://127.0.0.1:3000/.
 
-### Generating tests
-
-See [https://www.webascender.com/Blog/ID/566/Testing-Rails-4-Apps-With-RSpec-3-Part-I#.WGePRrYrK9s](https://www.webascender.com/Blog/ID/566/Testing-Rails-4-Apps-With-RSpec-3-Part-I#.WGePRrYrK9s).
-
-To generate rspecs: `bin/rails generate rspec:model Disks`
-
-To execute tests: `bin/rspec`
+# Pending
+* Copy to external
+* Update disks (needs to mount)
+* Update internal disk

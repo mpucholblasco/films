@@ -75,6 +75,13 @@ Edit `/etc/fstab` and add:
 /dev/sdb1	/media/usb	ntfs-3g	defaults,gid=1001,user,noauto,rw	0	0
 ```
 
+### Old computer configuration
+
+```bash
+# Time sync service
+apt install systemd-timesyncd
+```
+
 ## Developing
 
 ### In container

@@ -48,7 +48,7 @@ class UpdateDiskInformationJob < ApplicationJob
     `mount #{DISK_MOUNT_PATH}`
 
     begin
-      disk = HardDiskInfo.read_from_mounted_disk(mount)
+      disk = DisksHelper::HardDiskInfo.read_from_mounted_disk(mount)
       disk.ensure_exists
       disk_id = disk.id if disk_id.nil?
     rescue ActiveRecord::RecordNotFound

@@ -83,7 +83,7 @@ class MoveFromServerToExternalJob < ApplicationJob
 
   def self.check_external_disk(mount_path)
     begin
-      disk = HardDiskInfo.read_from_mounted_disk(mount_path)
+      disk = DisksHelper::HardDiskInfo.read_from_mounted_disk(mount_path)
       disk.ensure_exists
       logger.info("Detected external disk: #{disk.inspect}")
     rescue StandardError => e

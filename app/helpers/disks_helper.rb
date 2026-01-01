@@ -71,7 +71,7 @@ module DisksHelper
     end
 
     def self.read_from_yaml(filename)
-      raise IOError.new("File <#{filename}> not found") if not File.exists?(filename)
+      raise IOError.new("File <#{filename}> not found") if not File.exist?(filename)
 
       begin
         disk_info = YAML.load_file filename
@@ -79,34 +79,31 @@ module DisksHelper
         return self.read_from_old_file(filename)
       end
 
-      disk = HardDiskInfo.new
-      disk.name = disk_info["name"]
-      disk.id = disk_info["id"]
-
-      # Obtain disk space
-      stat_info = Filesystem.stat(filename)
-      disk.total_size = stat_info.block_size * stat_info.blocks
-      disk.free_size = stat_info.block_size * stat_info.blocks_free
-      disk
+      HardDiskInfo.new(disk_info["id"], disk_info["name"], filename)
     end
 
     def self.read_from_old_file(filename)
-      raise IOError.new("File <#{filename}> not found") if not File.exists?(filename)
+      raise IOError.new("File <#{filename}> not found") if not File.exist?(filename)
       content = File.open(filename).read
       content.gsub!(/\r\n?/, "\n")
       content_lines = content.lines
 
-      disk = HardDiskInfo.new
-      line1_match =  /ID Disco:\s*(\d+)/.match(content_lines[0])
+      line1_match = /ID Disco:\s*(\d+)/.match(content_lines[0])
       raise SyntaxError.new("Incorrect info file format") if not line1_match
-      disk.id = line1_match[1].to_i
-      disk.name = content_lines[1].strip()
+
+      HardDiskInfo.new(line1_match[1].to_i, content_lines[1].strip(), filename)
+    end
+
+    attr_reader :id, :name, :total_size, :free_size
+
+    def initialize(id, name, filesystem_path)
+      @id = id
+      @name = name
 
       # Obtain disk space
-      stat_info = Filesystem.stat(filename)
-      disk.total_size = stat_info.block_size * stat_info.blocks
-      disk.free_size = stat_info.block_size * stat_info.blocks_free
-      disk
+      stat_info = Sys::Filesystem.stat(filesystem_path)
+      @total_size = stat_info.block_size * stat_info.blocks
+      @free_size = stat_info.block_size * stat_info.blocks_free
     end
 
     def store_on_mounted_disk(mount)
@@ -115,15 +112,13 @@ module DisksHelper
 
     def store_as_yaml(filename)
       File.open(filename, "w") do |file|
-        file.write({ "id" => self.id, "name" => self.name }.to_yaml)
+        file.write({ "id" => @id, "name" => @name }.to_yaml)
       end
     end
 
     def ensure_exists
-      other_disk = Disk.find(self.id)
-      raise Exception.new(I18n.t(:update_error_disk_not_in_db)) if name != other_disk.name or disk_type != other_disk.disk_type
-      self.created_at = other_disk.created_at
-      self.updated_at = other_disk.updated_at
+      other_disk = Disk.find(@id)
+      raise Exception.new(I18n.t(:update_error_disk_not_in_db)) if name != other_disk.name
     end
   end
 end

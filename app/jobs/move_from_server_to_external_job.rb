@@ -24,7 +24,8 @@ class MoveFromServerToExternalJob < ApplicationJob
     job_progress = Job.find(job_id)
     job_progress.upgrade_progress(100, I18n.t(:update_content_finish))
     job_progress.finish_correctly
-    system("sync")
+    `sync`
+    `umount #{MOUNT_PATH}`
   end
 
   rescue_from(StandardError) do |exception|
@@ -32,11 +33,13 @@ class MoveFromServerToExternalJob < ApplicationJob
     job_progress = Job.find(job_id)
     job_progress.upgrade_progress(100, "Error")
     job_progress.finish_with_errors(exception.message)
-    system("sync")
+    `sync`
+    `umount #{MOUNT_PATH}`
   end
 
   def perform(*args)
     logger.debug "Performing MoveFromServerToExternalJob with job id = #{job_id}"
+    `mount #{MOUNT_PATH}`
     job_progress = Job.find(job_id)
     MoveFromServerToExternalJob.process(SOURCE_PATH, MOUNT_PATH, TARGET_PATH, job_progress)
   end
@@ -66,7 +69,7 @@ class MoveFromServerToExternalJob < ApplicationJob
           logger.info("After moving file #{file} to #{target_filename}")
         rescue StandardError => e
           logger.info("Exception raised on file #{file}, with exception class '#{e.class}', message '#{e.message}' and backtrace #{e.backtrace}")
-          File.unlink target_filename if File.exists?(target_filename)
+          File.unlink target_filename if File.exist?(target_filename)
 
           # Ignore the following errors: invalid argument (can not find origin file)
           raise e if not e.is_a? Errno::EINVAL
@@ -80,7 +83,7 @@ class MoveFromServerToExternalJob < ApplicationJob
 
   def self.check_external_disk(mount_path)
     begin
-      disk = HardDiskInfo.read_from_mounted_disk(mount_path)
+      disk = DisksHelper::HardDiskInfo.read_from_mounted_disk(mount_path)
       disk.ensure_exists
       logger.info("Detected external disk: #{disk.inspect}")
     rescue StandardError => e

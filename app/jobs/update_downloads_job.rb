@@ -15,40 +15,55 @@ class UpdateDownloadsJob < ApplicationJob
       -c 'show dl'
     TEXT
 
-    Open3.popen3(amulecmd_command) do |stdout, stderr, status, thread|
-      Rails.logger.info("status=#{status}") # TODO check status and filter
+    final_stderr = ""
+    begin
+      Open3.popen3(amulecmd_command) do |stdin, stdout, stderr, thread|
+        stdin.close # close as no input is needed
 
-      Download.transaction do
-        Download.delete_all()
+        stdout_thread = Thread.new { stdout.read }
+        stderr_thread = Thread.new { stderr.read }
 
-        status = 0 # wait for a > with hash
-        last_file_name = nil
-        while line=stdout.gets do
-          case status
-          when 0
-            match = @@first_line_re.match(line)
-            if match
-              raise StandardError.new("Found match for file but file is not empty") unless last_file_name.nil?
-              last_file_name = match["filename"]
-              status = 1
-            end
-          else
-            match = @@second_line_re.match(line)
-            if match
-              raise StandardError.new("Found match for percentage but file is empty") if last_file_name.nil?
-              last_file_name = last_file_name.encode("UTF-8", invalid: :replace, undef: :replace)
+        # Wait until process finishes
+        status = thread.value
 
-              Download.new(filename: last_file_name, percentage: match["percentage"]).save!
+        final_stdout = stdout_thread.value
+        final_stderr = stderr_thread.value
 
-              last_file_name = nil
-              status = 0
+        Rails.logger.info("status=#{status}")
+
+        Download.transaction do
+          Download.delete_all()
+
+          status = 0 # wait for a > with hash
+          last_file_name = nil
+
+          final_stdout.each_line do |line|
+            case status
+            when 0
+              match = @@first_line_re.match(line)
+              if match
+                raise StandardError.new("Found match for file but file is not empty") unless last_file_name.nil?
+                last_file_name = match["filename"]
+                status = 1
+              end
+            else
+              match = @@second_line_re.match(line)
+              if match
+                raise StandardError.new("Found match for percentage but file is empty") if last_file_name.nil?
+                last_file_name = last_file_name.encode("UTF-8", invalid: :replace, undef: :replace)
+
+                Download.new(filename: last_file_name, percentage: match["percentage"]).save!
+
+                last_file_name = nil
+                status = 0
+              end
             end
           end
+          Download.set_last_update()
         end
-        Download.set_last_update()
       end
+    rescue SystemCallError, StandardError => e
+      Rails.logger.warn("Could not execute amulecmd command, ignoring. Error: #{e.inspect}. Stderr: #{final_stderr}")
     end
-  rescue SystemCallError, StandardError => e
-    Rails.logger.warn("Could not execute amulecmd command, ignoring. Error: #{e.inspect}")
   end
 end

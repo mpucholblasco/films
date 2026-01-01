@@ -7,7 +7,15 @@ class UpdateDownloadsJob < ApplicationJob
   @@second_line_re = /^\s*>\s+\[(?<percentage>[^%]+)%\].+/
 
   def perform(*args)
-    Open3.popen3("amulecmd show dl") do |stdout, stderr, status, thread|
+    amulecmd_command = <<~TEXT.squish
+      #{Rails.configuration.settings.amule[:amulecmd]}
+      -h #{Rails.configuration.settings.amule[:host]}
+      -p #{Rails.configuration.settings.amule[:port]}
+      -P #{Rails.configuration.settings.amule[:password]}
+      -c 'show dl'
+    TEXT
+
+    Open3.popen3(amulecmd_command) do |stdout, stderr, status, thread|
       Rails.logger.info("status=#{status}") # TODO check status and filter
 
       Download.transaction do

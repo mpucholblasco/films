@@ -102,6 +102,5 @@ bundle exec rails s
 You can access to the application via http://127.0.0.1:3000/.
 
 # Pending
-* Copy to external
-* Update disks (needs to mount)
-* Update internal disk
+* Copy to external. During the copy, update the files information.
+* Update internal disk (Downloads)

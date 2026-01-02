@@ -12,7 +12,7 @@ class UpdateDownloadsJob < ApplicationJob
       -h #{Rails.configuration.settings.amule[:host]}
       -p #{Rails.configuration.settings.amule[:port]}
       -P #{Rails.configuration.settings.amule[:password]}
-      -c 'show dl'
+      --command="show dl"
     TEXT
 
     final_stderr = ""
@@ -24,46 +24,49 @@ class UpdateDownloadsJob < ApplicationJob
         stderr_thread = Thread.new { stderr.read }
 
         # Wait until process finishes
-        status = thread.value
+        thread.value
 
         final_stdout = stdout_thread.value
         final_stderr = stderr_thread.value
 
-        Rails.logger.info("status=#{status}")
-
-        Download.transaction do
-          Download.delete_all()
-
-          status = 0 # wait for a > with hash
-          last_file_name = nil
-
-          final_stdout.each_line do |line|
-            case status
-            when 0
-              match = @@first_line_re.match(line)
-              if match
-                raise StandardError.new("Found match for file but file is not empty") unless last_file_name.nil?
-                last_file_name = match["filename"]
-                status = 1
-              end
-            else
-              match = @@second_line_re.match(line)
-              if match
-                raise StandardError.new("Found match for percentage but file is empty") if last_file_name.nil?
-                last_file_name = last_file_name.encode("UTF-8", invalid: :replace, undef: :replace)
-
-                Download.new(filename: last_file_name, percentage: match["percentage"]).save!
-
-                last_file_name = nil
-                status = 0
-              end
-            end
-          end
-          Download.set_last_update()
-        end
+        store_downloads_from_amulecmd_output(final_stdout)
       end
     rescue SystemCallError, StandardError => e
-      Rails.logger.warn("Could not execute amulecmd command, ignoring. Error: #{e.inspect}. Stderr: #{final_stderr}")
+      Rails.logger.warn("Could not execute amulecmd command, ignoring. Error: #{e.inspect}")
+      Rails.logger.warn("Error message from amulecmd: #{final_stderr}") if !final_stderr.empty?
+    end
+  end
+
+  def store_downloads_from_amulecmd_output(output)
+    Download.transaction do
+      Download.delete_all()
+
+      status = 0 # wait for a > with hash
+      last_file_name = nil
+
+      final_stdout.each_line do |line|
+        case status
+        when 0
+          match = @@first_line_re.match(line)
+          if match
+            raise StandardError.new("Found match for file but file is not empty") unless last_file_name.nil?
+            last_file_name = match["filename"]
+            status = 1
+          end
+        else
+          match = @@second_line_re.match(line)
+          if match
+            raise StandardError.new("Found match for percentage but file is empty") if last_file_name.nil?
+            last_file_name = last_file_name.encode("UTF-8", invalid: :replace, undef: :replace)
+
+            Download.new(filename: last_file_name, percentage: match["percentage"]).save!
+
+            last_file_name = nil
+            status = 0
+          end
+        end
+      end
+      Download.set_last_update()
     end
   end
 end

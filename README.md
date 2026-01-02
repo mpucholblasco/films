@@ -104,3 +104,4 @@ You can access to the application via http://127.0.0.1:3000/.
 # Pending
 * Copy to external. During the copy, update the files information.
 * Update internal disk (Downloads)
+* Duplicates not found problerly (e.g. 'Asesino postales' movie)

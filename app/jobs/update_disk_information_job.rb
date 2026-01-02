@@ -120,12 +120,13 @@ class UpdateDiskInformationJob < ApplicationJob
         end
       rescue IOError => ex
         errors << I18n.t(:update_error_couldnt_rename_file, original_name: file.original_name, target_name: file.filename) << "(" << ex.message << ")" << '\n'
-        Rails.logger.debug "Error adding file #{file.inspect}. Reason: #{ex}"
+        Rails.logger.warn "Error adding file #{file.inspect}. Reason: #{ex}"
       rescue ActiveRecord::RecordNotUnique => ex
         errors << I18n.t(:update_error_duplicated_file, duplicated_filename: file.filename) << '\n'
-        Rails.logger.debug "Error adding file #{file.inspect}. Reason: #{ex}"
+        Rails.logger.warn "Error adding file #{file.inspect}. Reason: #{ex}"
       end
     end
+    Rails.logger.info "Added <#{added_files}> files and found <#{errors.length}> errors"
     errors
   end
 
@@ -146,12 +147,13 @@ class UpdateDiskInformationJob < ApplicationJob
         end
       rescue IOError => ex
         errors << I18n.t(:update_error_couldnt_rename_file, original_name: file.original_name, target_name: file.filename) << "(" << ex.message << ")" << '\n'
-        Rails.logger.debug "Error updating file #{file.inspect}. Reason: #{ex}"
+        Rails.logger.warn "Error updating file #{file.inspect}. Reason: #{ex}"
       rescue ActiveRecord::RecordNotUnique => ex
         errors << I18n.t(:update_error_duplicated_file, duplicated_filename: file.filename) << '\n'
-        Rails.logger.debug "Error updating file #{file.inspect}. Reason: #{ex}"
+        Rails.logger.warn "Error updating file #{file.inspect}. Reason: #{ex}"
       end
     end
+    Rails.logger.info "Updated <#{updated_files}> files and found <#{errors.length}> errors"
     errors
   end
 end

@@ -44,7 +44,7 @@ class UpdateDownloadsJob < ApplicationJob
       status = 0 # wait for a > with hash
       last_file_name = nil
 
-      final_stdout.each_line do |line|
+      output.each_line do |line|
         case status
         when 0
           match = @@first_line_re.match(line)

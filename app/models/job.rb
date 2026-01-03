@@ -45,7 +45,7 @@ class Job < ApplicationRecord
 
   def is_cancelled?
     self.reload
-    self.finish_status == "CANCELLED"
+    self.finish_status == :CANCELLED
   end
 
   def self.where_unfinished_or_finished_in_seven_days
@@ -57,7 +57,7 @@ class Job < ApplicationRecord
   end
 
   def check_finished
-    if self.finish_status == "UNFINISHED"
+    if self.finish_status == :UNFINISHED
       raise JobDeletingUnfinishedError.new
     end
   end

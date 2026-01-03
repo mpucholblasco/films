@@ -11,6 +11,13 @@
 	<span id="progresstext"><%= @job.progress_stage %></span>
 </p>
 
+<% if @job.finish_status_FINISHED_WITH_ERRORS? %>
+<p>
+  <strong><%= t(:error) %>:</strong>
+  <%= @job.error_message %>
+</p>
+<% end %>
+
 <p>
 	<strong><%= t(:progress) %>:</strong>
 	<span id="progressnumber"><%= @job.progress %></span>% <progress id="progressbar" value="<%= @job.progress %>" max="100"></progress>

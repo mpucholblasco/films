@@ -20,6 +20,8 @@ class UpdateDiskInformationJob < ApplicationJob
     job_progress = Job.find(job_id)
     job_progress.upgrade_progress(100, I18n.t(:update_content_finish))
     job_progress.finish_correctly
+    `sync`
+    `umount #{DISK_MOUNT_PATH}`
   end
 
   rescue_from(StandardError) do |exception|
@@ -27,6 +29,8 @@ class UpdateDiskInformationJob < ApplicationJob
     job_progress = Job.find(job_id)
     job_progress.upgrade_progress(100, "Error")
     job_progress.finish_with_errors(exception.message)
+    `sync`
+    `umount #{DISK_MOUNT_PATH}`
   end
 
   def perform(*args)
@@ -79,10 +83,6 @@ class UpdateDiskInformationJob < ApplicationJob
     disk_db.total_size = disk.total_size
     disk_db.free_size = disk.free_size
     disk_db.save()
-
-    # Found problems with external drives and file renaming, trying with a sync
-    `sync`
-    `umount #{DISK_MOUNT_PATH}`
 
     if not errors.empty?
       raise StandardError.new(errors.join("\n"))

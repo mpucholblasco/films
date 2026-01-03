@@ -74,6 +74,7 @@ es:
   stage: "Fase"
   not_found: "No encontrado"
   unknown_error: "Error desconocido"
+  error: "Error"
 
   # Actions
   show: "Mostrar"
@@ -183,7 +184,7 @@ es:
         filename: "Nombre del fichero: "
         size_mb: "Tamaño en MB: "
         score: "Puntuación: "
-  
+
 
   helpers:
     submit:

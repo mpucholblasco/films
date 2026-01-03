@@ -61,9 +61,10 @@ class UpdateDiskInformationJob < ApplicationJob
       raise StandardError.new(I18n.t(:update_error_disk_information_not_found))
     end
 
+    disk_db = Disk.find(disk.id)
+
     if disk.id != disk_id
-      updating_disk = Disk.find(disk_id)
-      raise StandardError.new(I18n.t(:update_error_inserted_disk_is_not_updating_one, inserted_disk: disk.name, updating_disk: updating_disk.name))
+      raise StandardError.new(I18n.t(:update_error_inserted_disk_is_not_updating_one, inserted_disk: disk.name, updating_disk: disk_db.name))
     end
 
     job_progress.upgrade_progress(0, I18n.t(:update_content_obtaining_disk_info))
@@ -77,11 +78,10 @@ class UpdateDiskInformationJob < ApplicationJob
 
     FileDisk.suppressing_turbo_broadcasts do
       self.remove_files(hard_disk_files_updater_info.get_files_to_remove, job_progress)
-      errors << self.add_files(mount, hard_disk_files_updater_info.get_files_to_add, job_progress)
-      errors << self.update_files(mount, hard_disk_files_updater_info.get_files_to_update, job_progress)
+      errors.concat(self.add_files(mount, hard_disk_files_updater_info.get_files_to_add, job_progress))
+      errors.concat(self.update_files(mount, hard_disk_files_updater_info.get_files_to_update, job_progress))
     end
 
-    disk_db = Disk.find(disk.id)
     disk_db.last_sync = Time.zone.now
     disk_db.total_size = disk.total_size
     disk_db.free_size = disk.free_size

@@ -75,7 +75,7 @@ class UpdateDiskInformationJob < ApplicationJob
       end
     end
 
-    Turbo::Streams::Broadcasts.suppressing_turbo_broadcasts do
+    FileDisk.suppressing_turbo_broadcasts do
       self.remove_files(hard_disk_files_updater_info.get_files_to_remove, job_progress)
       errors << self.add_files(mount, hard_disk_files_updater_info.get_files_to_add, job_progress)
       errors << self.update_files(mount, hard_disk_files_updater_info.get_files_to_update, job_progress)

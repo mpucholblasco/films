@@ -62,7 +62,8 @@ class UpdateDiskInformationJob < ApplicationJob
     end
 
     if disk.id != disk_id
-      raise StandardError.new(I18n.t(:update_error_inserted_disk_is_not_updating_one, inserted_disk: disk.id, updating_disk: disk_id))
+      updating_disk = Disk.find(disk_id)
+      raise StandardError.new(I18n.t(:update_error_inserted_disk_is_not_updating_one, inserted_disk: disk.name, updating_disk: updating_disk.name))
     end
 
     job_progress.upgrade_progress(0, I18n.t(:update_content_obtaining_disk_info))

@@ -16,7 +16,7 @@ class ToolsController < ApplicationController
       LIMIT #{@per_page} OFFSET #{offset}
     SQL
 
-    @duplicates = Kaminari.paginate_array(data.to_a)
+    @duplicates = Kaminari.paginate_array(data.to_a, total_count: 1_000_000_000)
                           .page(@current_page)
                           .per(@per_page)
     logger.info "Found #{@duplicates.size} duplicates"

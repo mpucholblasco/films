@@ -8,6 +8,9 @@ Bundler.require(*Rails.groups)
 
 module Films
   class Application < Rails::Application
+    # Load settings from config/settings.yml file
+    config.settings = config_for(:settings)
+
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.0
 

@@ -1,0 +1,12 @@
+default: &default
+  amule:
+    amulecmd: amulecmd
+    host: localhost
+    port: 4712
+    password: <%= ENV['AMULE_PASSWORD'] %>
+
+development:
+  <<: *default
+
+production:
+  <<: *default

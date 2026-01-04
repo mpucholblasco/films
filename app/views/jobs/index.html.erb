@@ -6,6 +6,7 @@
   <tr>
     <th><%= t(:name) %></th>
     <th><%= t(:stage) %></th>
+    <th><%= t(:error) %></th>
     <th><%= t(:progress) %></th>
     <th><%= t(:creation) %></th>
     <th><%= t(:last_update) %></th>
@@ -16,6 +17,7 @@
 	<tr>
 		<td><%= job.description %></td>
     <td><%= job.progress_stage %></td>
+    <td><%= job.error_message %></td>
     <td><%= job.progress %>/<%= job.progress_max %></td>
     <td><%= job.created_at %></td>
     <td><%= job.updated_at %></td>

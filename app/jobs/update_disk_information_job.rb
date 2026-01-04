@@ -20,6 +20,8 @@ class UpdateDiskInformationJob < ApplicationJob
     job_progress = Job.find(job_id)
     job_progress.upgrade_progress(100, I18n.t(:update_content_finish))
     job_progress.finish_correctly
+    `sync`
+    `umount #{DISK_MOUNT_PATH}`
   end
 
   rescue_from(StandardError) do |exception|
@@ -27,6 +29,8 @@ class UpdateDiskInformationJob < ApplicationJob
     job_progress = Job.find(job_id)
     job_progress.upgrade_progress(100, "Error")
     job_progress.finish_with_errors(exception.message)
+    `sync`
+    `umount #{DISK_MOUNT_PATH}`
   end
 
   def perform(*args)
@@ -57,8 +61,10 @@ class UpdateDiskInformationJob < ApplicationJob
       raise StandardError.new(I18n.t(:update_error_disk_information_not_found))
     end
 
+    disk_db = Disk.find(disk.id)
+
     if disk.id != disk_id
-      raise StandardError.new(I18n.t(:update_error_inserted_disk_is_not_updating_one, inserted_disk: disk.id, updating_disk: disk_id))
+      raise StandardError.new(I18n.t(:update_error_inserted_disk_is_not_updating_one, inserted_disk: disk.name, updating_disk: disk_db.name))
     end
 
     job_progress.upgrade_progress(0, I18n.t(:update_content_obtaining_disk_info))
@@ -70,19 +76,16 @@ class UpdateDiskInformationJob < ApplicationJob
       end
     end
 
-    self.remove_files(hard_disk_files_updater_info.get_files_to_remove, job_progress)
-    errors << self.add_files(mount, hard_disk_files_updater_info.get_files_to_add, job_progress)
-    errors << self.update_files(mount, hard_disk_files_updater_info.get_files_to_update, job_progress)
+    FileDisk.suppressing_turbo_broadcasts do
+      self.remove_files(hard_disk_files_updater_info.get_files_to_remove, job_progress)
+      errors.concat(self.add_files(mount, hard_disk_files_updater_info.get_files_to_add, job_progress))
+      errors.concat(self.update_files(mount, hard_disk_files_updater_info.get_files_to_update, job_progress))
+    end
 
-    disk_db = Disk.find(disk.id)
     disk_db.last_sync = Time.zone.now
     disk_db.total_size = disk.total_size
     disk_db.free_size = disk.free_size
     disk_db.save()
-
-    # Found problems with external drives and file renaming, trying with a sync
-    `sync`
-    `umount #{DISK_MOUNT_PATH}`
 
     if not errors.empty?
       raise StandardError.new(errors.join("\n"))
@@ -100,6 +103,7 @@ class UpdateDiskInformationJob < ApplicationJob
         file.save
       end
     end
+    Rails.logger.info "Deleted <#{files_to_remove.length}> files properly"
   end
 
   def self.add_files(mount, files_to_add, job_progress)
@@ -120,12 +124,13 @@ class UpdateDiskInformationJob < ApplicationJob
         end
       rescue IOError => ex
         errors << I18n.t(:update_error_couldnt_rename_file, original_name: file.original_name, target_name: file.filename) << "(" << ex.message << ")" << '\n'
-        Rails.logger.debug "Error adding file #{file.inspect}. Reason: #{ex}"
+        Rails.logger.warn "Error adding file #{file.inspect}. Reason: #{ex}"
       rescue ActiveRecord::RecordNotUnique => ex
         errors << I18n.t(:update_error_duplicated_file, duplicated_filename: file.filename) << '\n'
-        Rails.logger.debug "Error adding file #{file.inspect}. Reason: #{ex}"
+        Rails.logger.warn "Error adding file #{file.inspect}. Reason: #{ex}"
       end
     end
+    Rails.logger.info "Added <#{added_files}> files and found <#{errors.length}> errors"
     errors
   end
 
@@ -146,12 +151,13 @@ class UpdateDiskInformationJob < ApplicationJob
         end
       rescue IOError => ex
         errors << I18n.t(:update_error_couldnt_rename_file, original_name: file.original_name, target_name: file.filename) << "(" << ex.message << ")" << '\n'
-        Rails.logger.debug "Error updating file #{file.inspect}. Reason: #{ex}"
+        Rails.logger.warn "Error updating file #{file.inspect}. Reason: #{ex}"
       rescue ActiveRecord::RecordNotUnique => ex
         errors << I18n.t(:update_error_duplicated_file, duplicated_filename: file.filename) << '\n'
-        Rails.logger.debug "Error updating file #{file.inspect}. Reason: #{ex}"
+        Rails.logger.warn "Error updating file #{file.inspect}. Reason: #{ex}"
       end
     end
+    Rails.logger.info "Updated <#{updated_files}> files and found <#{errors.length}> errors"
     errors
   end
 end

@@ -4,7 +4,7 @@ class ToolsController < ApplicationController
 
   def find_duplicated_movies
     logger.info "Finding duplicated movies"
-    duplicated_movies = Rails.cache.fetch("all_movies", expires_in: 10.minutes) do
+    duplicated_movies = Rails.cache.fetch("duplicated_movies", expires_in: 10.minutes) do
       duplicated_movies = ActiveRecord::Base.connection.select_all(<<-SQL)
         SELECT d1.name AS fd1_disk_name, fd.fd1_disk_id, fd.fd1_filename, d2.name AS fd2_disk_name, fd.fd2_disk_id, fd.fd2_filename
         FROM (
@@ -12,6 +12,7 @@ class ToolsController < ApplicationController
           FROM file_disks AS fd1
           INNER JOIN file_disks AS fd2 ON fd1.clean_title % fd2.clean_title AND fd1.id < fd2.id
           WHERE fd1.clean_title IS NOT NULL AND fd2.clean_title IS NOT NULL
+          LIMIT 1000
         ) AS fd
         INNER JOIN disks AS d1 ON fd.fd1_disk_id = d1.id
         INNER JOIN disks AS d2 ON fd.fd2_disk_id = d2.id
@@ -22,10 +23,10 @@ class ToolsController < ApplicationController
     @per_page = (params[:per_page] || 20).to_i
     @current_page = (params[:page] || 1).to_i
 
-    @duplicates = Kaminari.paginate_array(duplicated_movies, total_count: duplicated_movies.length)
+    @duplicates = Kaminari.paginate_array(duplicated_movies, total_count: duplicated_movies.size)
                           .page(@current_page)
                           .per(@per_page)
-    logger.info "Found #{@duplicates.size} duplicates"
+    logger.info "Found #{@duplicated_movies.size} duplicates"
   end
 
   def find_duplicated_series

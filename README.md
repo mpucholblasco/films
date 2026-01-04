@@ -59,7 +59,7 @@ sudo setfacl --default -m u::rwx,u:www-data:rwx /home/marcel/myfolder/
 
 Access to the DB and execute manually as root user:
 ```sql
-ALTER DATABASE films SET pg_trgm.similarity_threshold = 0.7
+ALTER DATABASE films_production SET pg_trgm.similarity_threshold = 0.7
 ```
 
 ## Copying files to external

@@ -10,8 +10,8 @@
   </tr>
 <% @duplicates.each do |row| %>
   <tr>
-    <td><%= row['fd1_filename'] %> (<%= link_to "disk", disk_path(row['fd1_disk_id']), :class => 'ref' %>)</td>
-    <td><%= row['fd2_filename'] %> (<%= link_to "disk", disk_path(row['fd2_disk_id']), :class => 'ref' %>)</td>
+    <td><%= row['fd1_filename'] %> (<%= row['fd1_disk_name'] %>)</td>
+    <td><%= row['fd2_filename'] %> (<%= row['fd2_disk_name'] %>)</td>
   </tr>
 <% end %>
 </table>

@@ -9,7 +9,7 @@ class ToolsController < ApplicationController
     offset = (@current_page - 1) * @per_page
 
     data = ActiveRecord::Base.connection.select_all(<<-SQL)
-      SELECT d1.disk_name AS fd1_disk_name, fd1.filename AS fd1_filename, d2.name AS fd2_disk_name, fd2.filename AS fd2_filename
+      SELECT d1.name AS fd1_disk_name, fd1.filename AS fd1_filename, d2.name AS fd2_disk_name, fd2.filename AS fd2_filename
       FROM file_disks AS fd1
       INNER JOIN file_disks AS fd2 ON fd1.clean_title % fd2.clean_title AND fd1.id < fd2.id
       INNER JOIN disks AS d1 ON fd1.disk_id = d1.id

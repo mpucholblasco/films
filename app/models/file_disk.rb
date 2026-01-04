@@ -4,12 +4,19 @@ class FileDisk < ApplicationRecord
 
   belongs_to :disk
   attr_accessor :original_name
-  before_save :fix_filename
+  before_save :fix_filename, :set_clean_title
   paginates_per 50
   broadcasts_refreshes
 
   def fix_filename
     self.filename = self.filename.encode("UTF-8", invalid: :replace, undef: :replace)
+  end
+
+  def set_clean_title
+    if self.clean_title.blank? and self.filename.match?(/^Peliculas\//i)
+      filename = FileDisk.clean_id_and_extension_from_filename(self.filename)
+      self.clean_title = File.basename(filename).gsub(/[^\p{L}\p{N}\s]/i, " ").squish
+    end
   end
 
   @original_name = nil
@@ -32,6 +39,20 @@ class FileDisk < ApplicationRecord
       return filename_id_match[:id].to_i(16)
     end
     nil
+  end
+
+  def self.clean_id_and_extension_from_filename(filename)
+    filename = filename.encode("UTF-8", invalid: :replace, undef: :replace)
+    filename_id_match = @@filename_re.match(filename)
+    if filename_id_match
+      return filename_id_match[:filename]
+    else
+      filename_ext_match = @@filename_ext_re.match(filename)
+      if filename_ext_match
+        return filename_ext_match[:filename]
+      end
+    end
+    filename
   end
 
   def self.find_using_filename_with_id(filename)

@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2016_12_28_111227) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_04_113224) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_trgm"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
@@ -45,6 +46,8 @@ ActiveRecord::Schema[8.0].define(version: 2016_12_28_111227) do
     t.datetime "updated_at", null: false
     t.decimal "score", precision: 5, scale: 2
     t.boolean "deleted", default: false, null: false
+    t.string "clean_title"
+    t.index ["clean_title"], name: "idx_file_disks_clean_title_trgm", opclass: :gin_trgm_ops, where: "(deleted IS NOT TRUE)", using: :gin
     t.index ["deleted"], name: "index_file_disks_on_deleted"
     t.index ["disk_id", "filename"], name: "index_file_disks_on_disk_id_and_filename", unique: true
     t.index ["disk_id"], name: "index_file_disks_on_disk_id"

@@ -2,14 +2,33 @@ class ToolsController < ApplicationController
   def index
   end
 
-  def find_duplicates
-    logger.info "Finding duplicates"
-    @duplicates = get_file_disk_duplicates
+  def find_duplicated_movies
+    logger.info "Finding duplicated movies"
+    @per_page = (params[:per_page] || 20).to_i
+    @current_page = (params[:page] || 1).to_i
+    offset = (@current_page - 1) * @per_page
+
+    data = ActiveRecord::Base.connection.select_all(<<-SQL)
+      SELECT d1.name AS fd1_disk_name, fd.fd1_disk_id, fd.fd1_filename, d2.name AS fd2_disk_name, fd.fd2_disk_id, fd.fd2_filename
+      FROM (
+        SELECT fd1.disk_id AS fd1_disk_id, fd1.filename AS fd1_filename, fd2.disk_id AS fd2_disk_id, fd2.filename AS fd2_filename
+        FROM file_disks AS fd1
+        INNER JOIN file_disks AS fd2 ON fd1.clean_title % fd2.clean_title AND fd1.id < fd2.id
+        WHERE fd1.clean_title IS NOT NULL AND fd2.clean_title IS NOT NULL
+        LIMIT #{@per_page} OFFSET #{offset}
+      ) AS fd
+      INNER JOIN disks AS d1 ON fd.fd1_disk_id = d1.id
+      INNER JOIN disks AS d2 ON fd.fd2_disk_id = d2.id
+    SQL
+
+    @duplicates = Kaminari.paginate_array(data.to_a, total_count: 1_000_000_000)
+                          .page(@current_page)
+                          .per(@per_page)
     logger.info "Found #{@duplicates.size} duplicates"
   end
 
-  def find_series_duplicates
-    logger.info "Finding series duplicated"
+  def find_duplicated_series
+    logger.info "Finding duplicated series"
     @duplicates = get_series_duplicates
     logger.info "Found #{@duplicates.size} series duplicated"
   end
@@ -46,22 +65,6 @@ class ToolsController < ApplicationController
   end
 
   private
-
-  def get_file_disk_duplicates
-    filenames_found = {}
-    FileDisk.find_each do |file_disk|
-      if file_disk.filename !~ /^series/i
-        basename = File.basename(file_disk.filename)
-        if filenames_found.has_key?(basename)
-        filenames_found[basename] << file_disk
-        else
-          filenames_found[basename] = [ file_disk ]
-        end
-      end
-    end
-
-    filenames_found.reject { |k, v| v.length == 1 }
-  end
 
   def get_series_duplicates
     series_found = {}

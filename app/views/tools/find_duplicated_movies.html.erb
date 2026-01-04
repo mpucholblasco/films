@@ -1,0 +1,20 @@
+<h1><%= link_to t(:tools), tools_path %> / <%= t(:find_duplicated_movies) %></h1>
+
+<% if @duplicates.empty? %>
+<p><%= t(:duplicated_movies_not_found) %></p>
+<% else %>
+<table cols="3">
+  <tr>
+    <th><%= t(:filename) %> 1</th>
+    <th><%= t(:filename) %> 2</th>
+  </tr>
+<% @duplicates.each do |row| %>
+  <tr>
+    <td><%= row['fd1_filename'] %> (<%= row['fd1_disk_name'] %>)</td>
+    <td><%= row['fd2_filename'] %> (<%= row['fd2_disk_name'] %>)</td>
+  </tr>
+<% end %>
+</table>
+
+<%= paginate @duplicates %>
+<% end -%>

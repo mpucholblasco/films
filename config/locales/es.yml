@@ -90,12 +90,12 @@ es:
 
   # Tools
   tools: "Herramientas"
-  find_duplicates: "Encontrar duplicados"
-  find_duplicates_description: "Busca ficheros duplicados dentro de la base de datos y los muestra."
-  duplicates_not_found: "No se han encontrado ficheros duplicados."
-  find_series_duplicates: "Encontrar series duplicadas"
-  find_series_duplicates_description: "Busca series duplicados dentro de la base de datos y las muestra."
-  duplicate_series_not_found: "No se han encontrado series duplicadas."
+  find_duplicated_movies: "Encontrar películas duplicadas"
+  find_duplicated_series: "Encontrar series duplicadas"
+  find_duplicated_movies_description: "Busca películas duplicadas dentro de la base de datos y las muestra."
+  find_duplicated_series_description: "Busca series duplicadas dentro de la base de datos y las muestra."
+  duplicated_movies_not_found: "No se han encontrado películas duplicadas."
+  duplicated_series_not_found: "No se han encontrado series duplicadas."
   stop_amule: "Parar amule"
   stop_amule_description: "Para el servidor de amule."
   start_amule: "Iniciar amule"

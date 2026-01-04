@@ -4,7 +4,7 @@ class ToolsController < ApplicationController
 
   def find_duplicated_movies
     logger.info "Finding duplicated movies"
-    duplicated_movies = Rails.cache.fetch("all_movies", expires_in: 12.hours) do
+    duplicated_movies = Rails.cache.fetch("all_movies", expires_in: 10.minutes) do
       duplicated_movies = ActiveRecord::Base.connection.select_all(<<-SQL)
         SELECT d1.name AS fd1_disk_name, fd.fd1_disk_id, fd.fd1_filename, d2.name AS fd2_disk_name, fd.fd2_disk_id, fd.fd2_filename
         FROM (

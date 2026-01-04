@@ -3,7 +3,7 @@
 <% if @duplicates.empty? %>
 <p><%= t(:duplicate_series_not_found) %></p>
 <% else %>
-<% @duplicates.each_pair do |seriename, serie_disk|%>
+<% @duplicates.each_pair do |seriename, serie_disk| %>
 <table>
 	<tr>
 		<th><%= seriename %></th>

@@ -1,7 +1,7 @@
 <h1><%= link_to t(:tools), tools_path %> / <%= t(:find_duplicated_movies) %></h1>
 
 <% if @duplicates.empty? %>
-<p><%= t(:duplicates_not_found) %></p>
+<p><%= t(:duplicated_movies_not_found) %></p>
 <% else %>
 <table cols="3">
   <tr>

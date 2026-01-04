@@ -90,7 +90,8 @@ es:
 
   # Tools
   tools: "Herramientas"
-  find_duplicates: "Encontrar duplicados"
+  find_duplicated_movies: "Encontrar películas duplicadas"
+  find_duplicated_series: "Encontrar series duplicadas"
   find_duplicates_description: "Busca ficheros duplicados dentro de la base de datos y los muestra."
   duplicates_not_found: "No se han encontrado ficheros duplicados."
   find_series_duplicates: "Encontrar series duplicadas"

@@ -20,8 +20,8 @@ Rails.application.routes.draw do
 
   # Tools
   get "tools" => "tools#index"
-  get "tools/find_duplicates" => "tools#find_duplicates"
-  get "tools/find_series_duplicates" => "tools#find_series_duplicates"
+  get "tools/find_duplicated_movies" => "tools#find_duplicated_movies"
+  get "tools/find_duplicated_series" => "tools#find_duplicated_series"
   get "tools/stop_amule" => "tools#stop_amule"
   get "tools/start_amule" => "tools#start_amule"
   get "tools/copy_from_server_to_external" => "tools#copy_from_server_to_external"

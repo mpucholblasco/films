@@ -2,7 +2,7 @@ class ToolsController < ApplicationController
   def index
   end
 
-  def find_duplicates
+  def find_duplicated_movies
     logger.info "Finding duplicated movies"
     @per_page = (params[:per_page] || 20).to_i
     @current_page = (params[:page] || 1).to_i
@@ -27,8 +27,8 @@ class ToolsController < ApplicationController
     logger.info "Found #{@duplicates.size} duplicates"
   end
 
-  def find_series_duplicates
-    logger.info "Finding series duplicated"
+  def find_duplicated_series
+    logger.info "Finding duplicated series"
     @duplicates = get_series_duplicates
     logger.info "Found #{@duplicates.size} series duplicated"
   end

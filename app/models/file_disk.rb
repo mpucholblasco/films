@@ -13,8 +13,10 @@ class FileDisk < ApplicationRecord
   end
 
   def set_clean_title
-    filename = FileDisk.clean_id_and_extension_from_filename(self.filename)
-    self.clean_title = File.basename(filename).gsub(/[^\p{L}\p{N}\s]/i, " ").squish
+    if self.clean_title.blank? and self.filename.match?(/^Peliculas\//i)
+      filename = FileDisk.clean_id_and_extension_from_filename(self.filename)
+      self.clean_title = File.basename(filename).gsub(/[^\p{L}\p{N}\s]/i, " ").squish
+    end
   end
 
   @original_name = nil

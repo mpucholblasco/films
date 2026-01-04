@@ -4,9 +4,12 @@ class ToolsController < ApplicationController
 
   def find_duplicates
     logger.info "Finding duplicated movies"
-    @per_page = 20
+    @similarity_threshold = (params[:similarity_threshold] || 0.6).to_f
+    @per_page = (params[:per_page] || 20).to_i
     @current_page = (params[:page] || 1).to_i
     offset = (@current_page - 1) * @per_page
+
+    ActiveRecord::Base.connection.execute("SET pg_trgm.similarity_threshold = #{similarity_threshold}")
 
     data = ActiveRecord::Base.connection.select_all(<<-SQL)
       SELECT fd1.disk_id AS fd1_disk_id, fd1.filename AS fd1_filename, fd2.disk_id AS fd2_disk_id, fd2.filename AS fd2_filename
